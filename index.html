@@ -102,6 +102,12 @@ body{padding-bottom:64px}
 .stg.tappable .blk.holding{animation:blkhold .65s linear forwards}
 @keyframes blkhold{0%{box-shadow:inset 0 0 0 0 var(--accent)}100%{box-shadow:inset 0 -60px 0 0 rgba(252,203,45,.5)}}
 
+.wm-btn{position:absolute;top:12px;z-index:5;background:rgba(0,0,0,.26);border:none;border-radius:10px;color:#fff;font-family:var(--ui);font-weight:700;font-size:13px;padding:8px 11px}
+.wm-btn:active{background:rgba(0,0,0,.4)}
+.wm-btn:disabled{opacity:.35;pointer-events:none}
+.wm-back{left:12px}
+.wm-focus{right:12px;font-size:15px;padding:7px 9px}
+.wm-hint{text-align:center;font-size:12px;color:var(--t3);font-weight:600;padding:11px 0 2px;background:var(--bg)}
 .world-lbl{
   font-family:var(--px);font-size:8px;color:var(--night);
   text-align:center;margin-bottom:12px;letter-spacing:.1em;
@@ -118,9 +124,11 @@ body{padding-bottom:64px}
   flex:1 1 90px;min-width:78px;max-width:160px;
   display:flex;flex-direction:column;align-items:center;position:relative;
 }
-.stg:not(:last-child)::after{
-  content:'';position:absolute;right:-6px;bottom:14px;
-  width:4px;height:3px;background:var(--night);opacity:.3;
+.stg.boss:not(:last-of-type)::after{
+  content:'';position:absolute;right:-1px;bottom:20px;
+  width:0;height:104px;
+  border-right:3px dashed rgba(14,14,28,.28);
+  z-index:1;
 }
 .blk-wrap{position:relative;display:flex;justify-content:center}
 .blk{
@@ -138,6 +146,9 @@ body{padding-bottom:64px}
 .stg.lock .blk{opacity:.4}
 .stg.now .blk{opacity:1;animation:bnc .85s ease-in-out infinite;box-shadow:inset -6px -6px 0 rgba(0,0,0,.3),0 0 0 3px #fff}
 .stg.clr .blk{opacity:1}
+.now-tag{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);font-family:var(--ui);font-size:10px;font-weight:800;color:#1A1A0A;background:var(--accent);padding:3px 9px;border-radius:20px;white-space:nowrap;z-index:7;box-shadow:0 2px 0 var(--accent-d)}
+.now-tag::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--accent)}
+.stg.nowtime .blk{box-shadow:inset -6px -6px 0 rgba(0,0,0,.25),0 0 0 3px var(--accent)}
 .stg-slot{font-family:var(--px);font-size:9px;padding:6px 0 5px;width:100%;max-width:66px;text-align:center;white-space:nowrap;border:3px solid;border-top:none;border-radius:0 0 5px 5px;letter-spacing:.03em;line-height:1;margin-top:-3px;box-shadow:0 3px 0 rgba(0,0,0,.2);position:relative;z-index:2}
 .stg-slot.am{background:#2B7BE0;color:#fff;border-color:#0C3A7A}
 .stg-slot.pm{background:#F09000;color:#fff;border-color:#A05800}
@@ -713,6 +724,8 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <div class="cloud c2"></div>
   <div class="hill h1"></div><div class="hill h2"></div>
   <div class="bush b1"></div><div class="bush b2"></div>
+  <button class="wm-btn wm-back" id="wm-back" onclick="goBack()">◀ 이전</button>
+  <button class="wm-btn wm-focus" onclick="fmStart()" title="집중 모드">📵</button>
   <div class="now-banner" id="now-banner">
     <div class="nb-slot" id="nb-slot">오전</div>
     <div class="nb-name" id="nb-name">토익스피킹 모의고사 1회</div>
@@ -720,6 +733,7 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   </div>
   <div class="track" id="track"></div>
   <div class="ground"></div>
+  <div class="wm-hint" id="wm-hint">블록을 눌러 시작 · 꾹 누르면 완료</div>
 </div>
 
 <!-- 현재 스테이지 -->
@@ -1030,13 +1044,14 @@ function fxCombo(n){
 
 /* 데이터 */
 var STG=[
-  {id:'tos',   t:'목표 20분', n:'토익스피킹 모의고사 1회', d:'BOSS 1 — 끝까지 한 번에',   m:'Q1부터 마지막까지 멈추지 않고.\n실제 시험처럼 바로 답해.',        rest:null,boss:true, isRest:false,bonus:false,pm:20,pt:350,slot:'오전',rec:'~11시'},
-  {id:'br1',   t:'10분 휴식', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 1 격파 완료.\n10분 뒤 다음 관문으로 갑니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'apt',   t:'목표 60분', n:'인적성 1회',            d:'BOSS 2 — 시간 재고 풀기',    m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',              rest:null,boss:true, isRest:false,bonus:false,pm:60,pt:350,slot:'오후',rec:'~15시'},
-  {id:'br2',   t:'10분 휴식', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 2마리 격파.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'port',  t:'목표 40분', n:'포트폴리오 정리',        d:'BOSS 3 — 최종 관문',        m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.',      rest:null,boss:true, isRest:false,bonus:false,pm:40,pt:400,slot:'저녁',rec:'~20시'},
+  {id:'tos',   t:'22:36-22:56', n:'토익스피킹 모의고사 1회', d:'BOSS 1 — 끝까지 한 번에',   m:'Q1부터 마지막까지 멈추지 않고.\n실제 시험처럼 바로 답해.',        rest:null,boss:true, isRest:false,bonus:false,pm:20,pt:350,slot:'오전',rec:'22:36'},
+  {id:'br1',   t:'22:56-23:06', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 1 격파 완료.\n10분 뒤 다음 관문으로 갑니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'apt',   t:'23:06-24:06', n:'인적성 1회',            d:'BOSS 2 — 시간 재고 풀기',    m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',              rest:null,boss:true, isRest:false,bonus:false,pm:60,pt:350,slot:'오후',rec:'23:06'},
+  {id:'br2',   t:'24:06-24:16', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 2마리 격파.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'port',  t:'24:16-24:56', n:'포트폴리오 정리',        d:'BOSS 3 — 최종 관문',        m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.',      rest:null,boss:true, isRest:false,bonus:false,pm:40,pt:400,slot:'저녁',rec:'24:16'},
   {id:'bn_tos',t:'보너스',    n:'보너스 · 모의고사 1회',  d:'컨디션 남았으면',           m:'토스 한 회 더.\n안 해도 이미 클리어예요.',                       rest:null,boss:false,isRest:false,bonus:true, pm:20,pt:200},
   {id:'bn_apt',t:'보너스',    n:'보너스 · 인적성 1회',    d:'컨디션 남았으면',           m:'인적성 하나만 더 풀고 마무리.\n안 해도 이미 클리어예요.',        rest:null,boss:false,isRest:false,bonus:true, pm:60,pt:200},
+  {id:'bn_edu',t:'보너스',    n:'보너스 · 교육자료 분석', d:'컨디션 남았으면',           m:'교육자료 하나 골라 분석해보기.\n안 해도 이미 클리어예요.',      rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
 ];
 var BOSS=['tos','apt','port'];
 var BM=[{id:'tos'},{id:'apt'},{id:'port'}];
@@ -1457,6 +1472,12 @@ function bannerTick(){
   var clk=sbEl.querySelector('.nb-clock');
   if(clk)clk.textContent=tstr;
 }
+function nowSlot(){
+  var h=new Date().getHours();
+  if(h>=5&&h<12)return '오전';
+  if(h>=12&&h<18)return '오후';
+  return '저녁'; // 18~익일4시
+}
 function rTrack(){
   var w=q('track');w.innerHTML='';
   // 핵심 보스 3개만 표시 (휴식·보너스는 월드맵에서 숨김)
@@ -1473,11 +1494,13 @@ function rTrack(){
     var i=bosses[j],s=STG[i],d=isDone(i),sk=isSkip(i),n=(i===heroBoss)&&!d&&!sk;
     var slot=s.slot||'';
     var slc=slot==='오전'?'am':slot==='오후'?'pm':'ev';
+    var isNowSlot=(nowSlot()===slot);
     var el=document.createElement('div');
-    el.className='stg boss '+slc+' '+(d?'clr':sk?'skp':n?'now':'lock')+(i===jc?' hit':'')+(n?' tappable':'');
+    el.className='stg boss '+slc+' '+(d?'clr':sk?'skp':n?'now':'lock')+(i===jc?' hit':'')+(n?' tappable':'')+(isNowSlot?' nowtime':'');
     if(n)el.setAttribute('data-boss','1');
     var ic=d?'👑':sk?'⨯':n?(tt.st&&tt.run?'⏸':'▶'):'';
     el.innerHTML=
+      (isNowSlot?'<div class="now-tag">지금</div>':'')+
       '<div class="blk-wrap">'+
         (n?'<div class="hero"><svg class="hero-cat" viewBox="0 0 24 24" shape-rendering="crispEdges"><rect x="3" y="0" width="3" height="3" fill="#F08030"/><rect x="15" y="0" width="3" height="3" fill="#F08030"/><rect x="3" y="3" width="15" height="3" fill="#F08030"/><rect x="3" y="6" width="3" height="3" fill="#F08030"/><rect x="6" y="6" width="3" height="3" fill="#0A0A1A"/><rect x="9" y="6" width="3" height="3" fill="#F08030"/><rect x="12" y="6" width="3" height="3" fill="#0A0A1A"/><rect x="15" y="6" width="3" height="3" fill="#F08030"/><rect x="3" y="9" width="6" height="3" fill="#F08030"/><rect x="9" y="9" width="3" height="3" fill="#FF7CA0"/><rect x="12" y="9" width="6" height="3" fill="#F08030"/><rect x="0" y="12" width="3" height="3" fill="#FCFCFC"/><rect x="3" y="12" width="15" height="3" fill="#F08030"/><rect x="18" y="12" width="3" height="3" fill="#F08030"/><rect x="3" y="15" width="12" height="3" fill="#F08030"/><rect x="21" y="15" width="3" height="3" fill="#F08030"/><rect x="3" y="18" width="12" height="3" fill="#F08030"/><rect x="21" y="18" width="3" height="3" fill="#F08030"/><rect x="3" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="6" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="12" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="15" y="21" width="3" height="3" fill="#0A0A1A"/></svg></div>':'')+
         '<div class="blk">'+ic+'</div>'+
