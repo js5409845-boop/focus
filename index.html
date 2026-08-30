@@ -1413,7 +1413,7 @@ function closeHelp(e){if(e===null||e.target===q('ov-help'))q('ov-help').classLis
 function mcTap(i){mc[i]=!mc[i];q('mc-'+i).classList.toggle('got',!!mc[i]);if(mc[i])SFX.coin();}
 
 /* ══ 구글 시트 동기화 ══ */
-var SHEET_URL='https://script.google.com/macros/s/AKfycbz-PNTKCZWBmsojaN8MCM0NajC5vUCt3KJku1vjtnND_H8y0I32I11Ox1XL0UyJ_LCj/exec';
+var SHEET_URL='https://script.google.com/macros/s/AKfycbziAhG_SFhOJmOcPBIkPppZE6XLbG0otBbIgNYFC06V28gjyziM40t2ZiwfDL-H8omu/exec';
 function syncSheet(){
   var btn=q('sync-btn'),msg=q('sync-msg');
   btn.textContent='저장 중...';
