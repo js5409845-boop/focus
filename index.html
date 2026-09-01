@@ -81,7 +81,7 @@ body{padding-bottom:64px}
 .pole{flex:0 0 44px;width:44px;display:flex;flex-direction:column;align-items:center;position:relative;margin-bottom:5px}
 .pole-s{width:6px;height:66px;background:#B0FFB0;border:2px solid var(--night);box-sizing:content-box}
 .pole-b{width:16px;height:16px;background:#3CBC5C;border:3px solid var(--night);border-radius:50%;margin-bottom:-2px}
-.pole-f{position:absolute;top:8px;left:50%;width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:20px solid var(--fire);transition:top 1.1s cubic-bezier(.5,0,.7,1)}
+.pole-f{position:absolute;top:6px;left:calc(50% + 3px);width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:18px solid var(--fire);transition:top 1.1s cubic-bezier(.5,0,.7,1)}
 .pole.win .pole-f{top:52px}
 .pole.win .pole-b{animation:polebob .6s ease-in-out infinite}
 @keyframes polebob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -89,6 +89,7 @@ body{padding-bottom:64px}
 .now-banner{position:relative;z-index:3;text-align:center;padding:18px 14px 16px;pointer-events:none}
 .nb-slot{display:inline-block;font-family:var(--ui);font-size:14px;font-weight:800;color:#fff;padding:6px 16px;border-radius:8px;margin-bottom:13px;box-shadow:0 3px 0 rgba(0,0,0,.22)}
 
+.nb-slot.key{background:var(--accent);color:#1A1A0A}
 .nb-slot.am{background:#2B7BE0}
 .nb-slot.pm{background:#F0952E}
 .nb-slot.ev{background:#7A4BD0}
@@ -138,6 +139,7 @@ body{padding-bottom:64px}
 }
 @keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 /* 시간대별 블록 색 */
+.stg.key .blk{background:var(--accent);box-shadow:inset -6px -6px 0 var(--accent-d)}
 .stg.am .blk{background:#2B7BE0;box-shadow:inset -6px -6px 0 #0C3A7A}
 .stg.pm .blk{background:#F09000;box-shadow:inset -6px -6px 0 #A05800}
 .stg.ev .blk{background:#7A4BD0;box-shadow:inset -6px -6px 0 #3C1E7A}
@@ -150,6 +152,7 @@ body{padding-bottom:64px}
 .now-tag::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--accent)}
 .stg.nowtime .blk{box-shadow:inset -6px -6px 0 rgba(0,0,0,.25),0 0 0 3px var(--accent)}
 .stg-slot{font-family:var(--px);font-size:9px;padding:6px 0 5px;width:100%;max-width:66px;text-align:center;white-space:nowrap;border:3px solid;border-top:none;border-radius:0 0 5px 5px;letter-spacing:.03em;line-height:1;margin-top:-3px;box-shadow:0 3px 0 rgba(0,0,0,.2);position:relative;z-index:2}
+.stg-slot.key{background:var(--accent);color:#1A1A0A;border-color:var(--accent-d)}
 .stg-slot.am{background:#2B7BE0;color:#fff;border-color:#0C3A7A}
 .stg-slot.pm{background:#F09000;color:#fff;border-color:#A05800}
 .stg-slot.ev{background:#7A4BD0;color:#fff;border-color:#3C1E7A}
@@ -307,6 +310,7 @@ body{padding-bottom:64px}
 .q-tag.bonus,.q-tag.anchor{background:var(--coin);color:var(--night)}
 .q-slot{font-family:var(--ui);font-size:12px;font-weight:700;padding:0;border:none;display:inline-flex;align-items:center;gap:7px}
 .q-slot::before{content:'';width:9px;height:9px;border-radius:50%}
+.q-slot.key{color:var(--accent)}.q-slot.key::before{background:var(--accent)}
 .q-slot.am{color:var(--am)}.q-slot.am::before{background:var(--am)}
 .q-slot.pm{color:var(--pm)}.q-slot.pm::before{background:var(--pm)}
 .q-slot.ev{color:var(--ev)}.q-slot.ev::before{background:var(--ev)}
@@ -414,7 +418,14 @@ body{padding-bottom:64px}
 .btn-main.go:active{box-shadow:0 0 0 0 var(--accent-d)}
 .btn-main.rest{background:var(--pipe);color:#fff;box-shadow:0 4px 0 var(--pipe-d)}
 .btn-row{display:flex;gap:9px;align-items:stretch}
-.btn-row .btn-main{flex:1.7;background:var(--accent);color:#1A1A0A;box-shadow:0 4px 0 var(--accent-d)}
+.btn-row5{gap:6px}
+.btn-row5 .btn-side{font-size:15px;padding:14px 2px}
+.btn-row5 .btn-side span{font-size:9px}
+.btn-row5 .btn-main{flex:1.25;font-size:15px}
+.btn-row5 .btn-done span{font-size:12px}
+.btn-row .btn-main{flex:1.3;background:var(--accent);color:#1A1A0A;box-shadow:0 4px 0 var(--accent-d)}
+.btn-done{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:16px;font-weight:800}
+.btn-done span{font-size:13px}
 .btn-row .btn-main:active{box-shadow:0 0 0 0 var(--accent-d)}
 .btn-side{flex:1;border:none;border-radius:14px;background:var(--card2);color:var(--t2);font-family:var(--ui);font-weight:700;font-size:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 4px 0 rgba(0,0,0,.35);transition:transform .07s,box-shadow .07s}
 .btn-side span{font-size:10px;font-weight:600;color:var(--t3)}
@@ -500,6 +511,8 @@ body{padding-bottom:64px}
 .sr-slot{font-family:var(--px);font-size:8px;margin-right:8px;padding:4px 6px;border:2px solid;border-radius:3px}
 .sr-skip-b{font-family:var(--ui);font-size:11px;font-weight:700;color:var(--t3);background:var(--card2);border:1px solid var(--line2);border-radius:8px;padding:6px 10px;flex-shrink:0}
 .sr-skip-b:active{background:var(--line)}
+.sr-skip-b.redo{color:var(--accent);border-color:var(--accent-d)}
+.sr-slot.key{background:#3A2E08;color:var(--accent);border-color:var(--accent-d)}
 .sr-slot.am{background:#0C2A4A;color:#7CC0FF;border-color:#4A90D8}
 .sr-slot.pm{background:#3A2408;color:#FFB454;border-color:#D8891C}
 .sr-slot.ev{background:#2A1848;color:#C89CFF;border-color:#9060E0}
@@ -724,8 +737,7 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <div class="cloud c2"></div>
   <div class="hill h1"></div><div class="hill h2"></div>
   <div class="bush b1"></div><div class="bush b2"></div>
-  <button class="wm-btn wm-back" id="wm-back" onclick="goBack()">◀ 이전</button>
-  <button class="wm-btn wm-focus" onclick="fmStart()" title="집중 모드">📵</button>
+  <button class="wm-btn wm-back" id="wm-back" onclick="resetTimer()">↺ 리셋</button>
   <div class="now-banner" id="now-banner">
     <div class="nb-slot" id="nb-slot">오전</div>
     <div class="nb-name" id="nb-name">토익스피킹 모의고사 1회</div>
@@ -733,7 +745,6 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   </div>
   <div class="track" id="track"></div>
   <div class="ground"></div>
-  <div class="wm-hint" id="wm-hint">블록을 눌러 시작 · 꾹 누르면 완료</div>
 </div>
 
 <!-- 현재 스테이지 -->
@@ -765,7 +776,7 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
       <div class="rt-d" id="rt-d">00:00</div>
       <div class="rt-note" id="rt-note">끝나면 다음 스테이지로 자동 이동</div>
       <div class="rt-btns">
-        <button class="rt-b" onclick="goBack()">◀ 이전</button>
+        <button class="rt-b" onclick="restReset()">↺ 리셋</button>
         <button class="rt-b" id="rt-pause" onclick="restPause()">⏸ 일시정지</button>
         <button class="rt-b" onclick="restAdd(5)">+5분</button>
       </div>
@@ -792,10 +803,12 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <!-- 시작 전: 큰 버튼 하나 -->
   <button class="btn-main go" id="btn-go" onclick="mainGo()">▶ 시작하기</button>
   <!-- 진행 중: 이전 · 정지(가운데) · 완료(오른쪽) -->
-  <div class="btn-row" id="run-row" style="display:none">
-    <button class="btn-side" id="btn-back" onclick="leftBtn()">◀<span>이전</span></button>
+  <div class="btn-row btn-row5" id="run-row" style="display:none">
+    <button class="btn-side" id="btn-reset" onclick="resetTimer()">↺<span>리셋</span></button>
+    <button class="btn-side" id="btn-back" onclick="goPrev()">◀<span>이전</span></button>
     <button class="btn-side" id="btn-pause" onclick="mainPause()">⏸<span>정지</span></button>
-    <button class="btn-main" id="btn-clear" onclick="clearIt()">✓ 완료</button>
+    <button class="btn-side" id="btn-next" onclick="goNext()">▶<span>다음</span></button>
+    <button class="btn-main btn-done" id="btn-clear" onclick="clearIt()">✓<span>완료</span></button>
   </div>
   <button class="btn-skip" id="btn-skip2" style="display:none" onclick="skipSlot()"></button>
   <button class="btn-skip" id="btn-skip" style="display:none" onclick="skipSlot()"></button>
@@ -810,20 +823,17 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <div class="core-list">
     <div class="cq" id="cq-0">
       <div class="cq-n" id="cqn-0">1</div>
-      <span class="cq-slot" id="cqsl-0">오전</span>
-      <span class="cq-name">토익스피킹 모의고사&nbsp;1회</span>
+      <span class="cq-name">모의고사&nbsp;1회</span>
       <span class="cq-st" id="cqs-0">대기</span>
     </div>
     <div class="cq" id="cq-1">
       <div class="cq-n" id="cqn-1">2</div>
-      <span class="cq-slot" id="cqsl-1">오후</span>
-      <span class="cq-name">인적성&nbsp;1회</span>
+      <span class="cq-name">포트폴리오</span>
       <span class="cq-st" id="cqs-1">대기</span>
     </div>
     <div class="cq" id="cq-2">
       <div class="cq-n" id="cqn-2">3</div>
-      <span class="cq-slot" id="cqsl-2">저녁</span>
-      <span class="cq-name">포트폴리오 정리</span>
+      <span class="cq-name">인적성</span>
       <span class="cq-st" id="cqs-2">대기</span>
     </div>
   </div>
@@ -835,7 +845,7 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <button class="nav-item" id="nav-map" onclick="openSheet('map')"><span class="nav-ic">🗺️</span>여정</button>
   <button class="nav-item" id="nav-stats" onclick="openSheet('time')"><span class="nav-ic">📊</span>기록</button>
   <button class="nav-item" id="nav-timer" onclick="openSheet('timer')"><span class="nav-ic">⏱</span>타이머</button>
-  <button class="nav-item" id="nav-help" onclick="openHelp()"><span class="nav-ic">?</span>도움말</button>
+  <button class="nav-item" id="nav-help" onclick="openSheet('help')"><span class="nav-ic">🆘</span>죽겠네</button>
 </div>
 
 <!-- 시트 -->
@@ -846,6 +856,7 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
       <button class="stb on" onclick="sTab('map',this)">MAP</button>
       <button class="stb" onclick="sTab('time',this)">STATS</button>
       <button class="stb" onclick="sTab('timer',this)">TIMER</button>
+      <button class="stb" onclick="sTab('help',this)">HELP</button>
     </div>
     <div class="sh-body">
       <div class="spane on" id="sp-map"><div id="stage-list"></div></div>
@@ -892,6 +903,16 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
           <button class="pre" onclick="ftSet(5)">5M</button>
           <button class="pre" onclick="ftSet(10)">10M</button>
         </div>
+      </div>
+      <div class="spane" id="sp-help">
+        <div class="hp-rule">시작이 안 될 땐 아무것도 정하지 말고<br>아래 순서만 따라가세요.</div>
+        <div class="mcl">
+          <div class="mci" id="mc-0" onclick="mcTap(0)"><div class="mcn">1</div>침대·소파에서 몸 일으키기</div>
+          <div class="mci" id="mc-1" onclick="mcTap(1)"><div class="mcn">2</div>책상에 앉고 폰 엎어두기</div>
+          <div class="mci" id="mc-2" onclick="mcTap(2)"><div class="mcn">3</div>오늘 자료 화면에 띄우기</div>
+        </div>
+        <button class="hp-start" onclick="start5()">⏱ 5분만 하기</button>
+        <div class="mcnote">5분 뒤에도 그만두고 싶으면<br>그때 그만둬도 됩니다. 진짜로.</div>
       </div>
 
     </div>
@@ -1044,17 +1065,17 @@ function fxCombo(n){
 
 /* 데이터 */
 var STG=[
-  {id:'tos',   t:'22:36-22:56', n:'토익스피킹 모의고사 1회', d:'BOSS 1 — 끝까지 한 번에',   m:'Q1부터 마지막까지 멈추지 않고.\n실제 시험처럼 바로 답해.',        rest:null,boss:true, isRest:false,bonus:false,pm:20,pt:350,slot:'오전',rec:'22:36'},
-  {id:'br1',   t:'22:56-23:06', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 1 격파 완료.\n10분 뒤 다음 관문으로 갑니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'apt',   t:'23:06-24:06', n:'인적성 1회',            d:'BOSS 2 — 시간 재고 풀기',    m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',              rest:null,boss:true, isRest:false,bonus:false,pm:60,pt:350,slot:'오후',rec:'23:06'},
-  {id:'br2',   t:'24:06-24:16', n:'짧은 휴식',              d:'10분 자동 타이머',          m:'',                                                              rest:'BOSS 2마리 격파.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'port',  t:'24:16-24:56', n:'포트폴리오 정리',        d:'BOSS 3 — 최종 관문',        m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.',      rest:null,boss:true, isRest:false,bonus:false,pm:40,pt:400,slot:'저녁',rec:'24:16'},
-  {id:'bn_tos',t:'보너스',    n:'보너스 · 모의고사 1회',  d:'컨디션 남았으면',           m:'토스 한 회 더.\n안 해도 이미 클리어예요.',                       rest:null,boss:false,isRest:false,bonus:true, pm:20,pt:200},
-  {id:'bn_apt',t:'보너스',    n:'보너스 · 인적성 1회',    d:'컨디션 남았으면',           m:'인적성 하나만 더 풀고 마무리.\n안 해도 이미 클리어예요.',        rest:null,boss:false,isRest:false,bonus:true, pm:60,pt:200},
-  {id:'bn_edu',t:'보너스',    n:'보너스 · 교육자료 분석', d:'컨디션 남았으면',           m:'교육자료 하나 골라 분석해보기.\n안 해도 이미 클리어예요.',      rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
+  {id:'mock', t:'밤 10:13-새벽 12:43', n:'모의고사 1회',       d:'핵심 1',  m:'끝까지 한 번에.\n실제 시험처럼 바로 답해.',           rest:null,boss:true, isRest:false,bonus:false,pm:150,pt:350},
+  {id:'br1',  t:'새벽 12:43-12:53', n:'짧은 휴식',          d:'10분 자동 타이머', m:'',                                        rest:'핵심 1개 완료.\n10분 뒤 다음으로.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'port', t:'새벽 12:53-1:23', n:'포트폴리오',         d:'핵심 2',  m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.', rest:null,boss:true, isRest:false,bonus:false,pm:30,pt:400},
+  {id:'br2',  t:'새벽 1:23-1:33', n:'짧은 휴식',          d:'10분 자동 타이머', m:'',                                        rest:'핵심 2개 완료.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'apt',  t:'새벽 1:33-2:18', n:'인적성',             d:'핵심 3',  m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',       rest:null,boss:true, isRest:false,bonus:false,pm:45,pt:350},
+  {id:'bn_mock',t:'보너스', n:'보너스 · 모의고사 1회', d:'컨디션 남았으면', m:'한 회 더.\n안 해도 이미 클리어예요.',            rest:null,boss:false,isRest:false,bonus:true, pm:150,pt:200},
+  {id:'bn_apt', t:'보너스', n:'보너스 · 인적성',       d:'컨디션 남았으면', m:'하나만 더 풀고 마무리.\n안 해도 이미 클리어예요.', rest:null,boss:false,isRest:false,bonus:true, pm:45,pt:200},
+  {id:'bn_edu', t:'보너스', n:'보너스 · 교육자료 분석', d:'컨디션 남았으면', m:'교육자료 하나 골라 분석해보기.\n안 해도 이미 클리어예요.', rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
 ];
-var BOSS=['tos','apt','port'];
-var BM=[{id:'tos'},{id:'apt'},{id:'port'}];
+var BOSS=['mock','port','apt'];
+var BM=[{id:'mock'},{id:'port'},{id:'apt'}];
 
 var S={cur:0,done:[],skip:[],tl:{},combo:0,best:0,restEnd:null,restPaused:null,acc:{},tt:null,away:{c:0,ms:0}};
 var pn=null,jc=-1;
@@ -1079,7 +1100,21 @@ function load(){try{
   S.tl=d.tl||{}; S.combo=d.combo||0; S.best=d.best||0;
   S.restEnd=d.restEnd||null; S.restPaused=d.restPaused||null; S.acc=d.acc||{}; S.tt=d.tt||null; S.away=d.away||{c:0,ms:0};
 }catch(e){}}
-function resetAll(){if(!confirm('오늘 진행상황 전부 초기화?'))return;try{localStorage.removeItem(SK);}catch(e){}S={cur:0,done:[],skip:[],tl:{},combo:0,best:0,restEnd:null,restPaused:null,acc:{},tt:null,away:{c:0,ms:0}};stopRest();ttReset();render();}
+function resetAll(){
+  if(!confirm('오늘 진행상황 전부 초기화?'))return;
+  // 돌아가는 타이머·인터벌 전부 정지
+  if(tt.iv)clearInterval(tt.iv);
+  tt={run:false,pause:false,st:null,pt:null,tp:0,iv:null};
+  stopRest();
+  // 상태 초기화
+  S={cur:0,done:[],skip:[],tl:{},combo:0,best:0,restEnd:null,restPaused:null,acc:{},tt:null,away:{c:0,ms:0}};
+  try{localStorage.removeItem(SK);}catch(e){}
+  ttReset();
+  try{localStorage.removeItem(SK);}catch(e){} // render 중 save 대비 재삭제
+  render();
+  var ge=q('gt-el');if(ge)ge.textContent='00:00';
+  var _sm=q('sync-msg');if(_sm)_sm.textContent='초기화 완료';
+}
 function isDone(i){return S.done.indexOf(i)>=0;}
 function isSkip(i){return S.skip.indexOf(i)>=0;}
 function bossCount(){
@@ -1189,7 +1224,7 @@ function ftR(){q('ftd').textContent=p2(Math.floor(ft.s/60))+':'+p2(ft.s%60);}
 
 /* 시트 */
 function openSheet(n){
-  var btns=document.querySelectorAll('.stb'),map={map:0,time:1,timer:2,score:3};
+  var btns=document.querySelectorAll('.stb'),map={map:0,time:1,timer:2,help:3};
   if(btns[map[n]])sTab(n,btns[map[n]]);
   q('sheet').classList.add('on');
   syncNav(n);
@@ -1198,7 +1233,7 @@ function closeSheet(e){
   if(e===null||e.target===q('sheet')){q('sheet').classList.remove('on');syncNav('today');}
 }
 function syncNav(n){
-  var ids={today:'nav-today',map:'nav-map',time:'nav-stats',timer:'nav-timer',score:'nav-score'};
+  var ids={today:'nav-today',map:'nav-map',time:'nav-stats',timer:'nav-timer',help:'nav-help'};
   var navs=document.querySelectorAll('.nav-item');for(var i=0;i<navs.length;i++)navs[i].classList.remove('on');
   var id=ids[n]; if(id&&q(id))q(id).classList.add('on');
 }
@@ -1244,6 +1279,14 @@ function tickRest(){
   } else {
     d.className='rt-d';
   }
+}
+function restReset(){
+  var s=STG[S.cur];if(!s||!s.isRest)return;
+  if(!confirm('휴식 시간을 처음('+(s.pm||10)+'분)으로 되돌릴까요?'))return;
+  S.restPaused=null;
+  S.restEnd=Date.now()+(s.pm||10)*60000;
+  save();stopRest();tickRest();restIv=setInterval(tickRest,500);
+  SFX.tick();
 }
 function restPause(){
   if(S.restPaused!=null){ // 재개
@@ -1367,10 +1410,46 @@ function mainPause(){
   if(tt.run)ttPause();else if(tt.pause)ttStart();
   rMain();
 }
-function leftBtn(){ goBack(); }
+function leftBtn(){ resetTimer(); }
+function goNext(){
+  parkTimer();S.restEnd=null;stopRest();
+  var nx=-1;for(var i=S.cur+1;i<STG.length;i++){if(!STG[i].isRest){nx=i;break;}}
+  if(nx<0){return;}
+  S.cur=nx;ttReset();render();SFX.tick();
+}
+function goPrev(){
+  // 현재 진행 시간 저장 후, 바로 이전 스테이지(휴식 제외)로 이동
+  parkTimer();S.restEnd=null;stopRest();
+  var pv=-1;for(var i=S.cur-1;i>=0;i--){if(!STG[i].isRest){pv=i;break;}}
+  if(pv<0){return;} // 이전 없음
+  S.cur=pv;ttReset();render();SFX.tick();
+}
+function resetTimer(){
+  var s=STG[S.cur];if(!s)return;
+  var has=!!tt.st||!!(S.acc&&S.acc[s.id]);
+  if(!has){return;}
+  if(!confirm('지금 잰 시간을 0으로 되돌릴까요?'))return;
+  // 모든 타이머 상태 완전 초기화
+  if(tt.iv)clearInterval(tt.iv);
+  tt={run:false,pause:false,st:null,pt:null,tp:0,iv:null};
+  if(S.acc&&S.acc[s.id]!=null)delete S.acc[s.id];
+  if(S.tl&&S.tl[s.id]!=null)delete S.tl[s.id];
+  S.tt=null;
+  // 화면 즉시 0으로
+  var ge=q('gt-el');if(ge)ge.textContent='00:00';
+  var el=q('tw-el');if(el){el.textContent='00:00';el.className='tw-el';}
+  save();SFX.down();render();
+}
+function unskipTo(i){
+  var s=STG[i];if(!s)return;
+  var idx=S.skip.indexOf(i);if(idx>=0)S.skip.splice(idx,1);
+  parkTimer();S.restEnd=null;stopRest();
+  S.cur=i;q('sheet').classList.remove('on');syncNav('today');
+  SFX.power();ttReset();render();
+}
 function skipFrom(i){
   var s=STG[i];if(!s||!s.boss)return;
-  if(!confirm(s.slot+' ('+s.n+')을(를) 넘어갈까요?\n못 한 게 아니라 넘어감으로 기록돼요.'))return;
+  if(!confirm(s.n+'을(를) 나중으로 미룰까요?\n언제든 여정에서 다시 할 수 있어요.'))return;
   if(i===S.cur&&(tt.run||tt.pause))parkTimer();
   if(S.skip.indexOf(i)<0)S.skip.push(i);
   S.combo=0;SFX.down();
@@ -1399,7 +1478,9 @@ function rMain(){
     pb.className='btn-side';
     cb.textContent='✓ 완료';cb.className='btn-main';
     var bk=q('btn-back');
-    if(bk){bk.innerHTML='◀<span>이전</span>';bk.disabled=(S.done.length===0);bk.dataset.act='back';}
+    if(bk){bk.disabled=(S.cur===0);}
+    var nb2=q('btn-next');if(nb2){var hasNext=false;for(var _n=S.cur+1;_n<STG.length;_n++){if(!STG[_n].isRest){hasNext=true;break;}}nb2.disabled=!hasNext;}
+    var rb=q('btn-reset');if(rb){var _hasT=!!tt.st||!!(S.acc&&S.acc[s.id]);rb.disabled=!_hasT;}
     q('gt-hint').textContent=tt.run?'끝나면 완료 눌러 기록':'잠깐 멈춤 · 계속으로 재개';
     gtTick();
   }else{
@@ -1421,6 +1502,7 @@ function gtTick(){
 /* 렌더 */
 function render(){rBanner();rQuest();rTrack();rCore();rList();rScore();renderMsg();syncRest();save();}
 
+function bossLabel(id){var n=BOSS.indexOf(id);return n>=0?'핵심 '+(n+1):'핵심';}
 var SLOT_EMO={'오전':'🌅','오후':'☀️','저녁':'🌙'};
 function rBanner(){
   var b=q('now-banner');if(!b)return;
@@ -1442,16 +1524,13 @@ function rBanner(){
   }
   if(s&&s.isRest){
     b.className='now-banner';
-    var slc0=show&&show.slot?(show.slot==='오전'?'am':show.slot==='오후'?'pm':'ev'):'am';
-    slEl.className='nb-slot '+slc0;slEl.textContent='휴식 중';
+    slEl.className='nb-slot key';slEl.textContent='휴식 중';
     nmEl.textContent='잠깐 쉬고 → '+(show?show.n:'');
     sbEl.textContent='앉아서 쉬기 · 곧 다음 관문';
     return;
   }
   b.className='now-banner';
-  var slot=show&&show.slot?show.slot:'';
-  var slc=slot==='오전'?'am':slot==='오후'?'pm':'ev';
-  slEl.className='nb-slot '+slc;slEl.textContent=slot||'NOW';
+  slEl.className='nb-slot key';slEl.textContent=show?bossLabel(show.id):'핵심';
   nmEl.textContent=show?show.n:'';
   // 현재 스테이지가 이 보스이고 타이머 진행 중이면 시간 표시
   if(s&&s.boss&&tt.st){
@@ -1492,20 +1571,16 @@ function rTrack(){
   if(heroBoss<0&&bosses.length)heroBoss=bosses[bosses.length-1];
   for(var j=0;j<bosses.length;j++){
     var i=bosses[j],s=STG[i],d=isDone(i),sk=isSkip(i),n=(i===heroBoss)&&!d&&!sk;
-    var slot=s.slot||'';
-    var slc=slot==='오전'?'am':slot==='오후'?'pm':'ev';
-    var isNowSlot=(nowSlot()===slot);
     var el=document.createElement('div');
-    el.className='stg boss '+slc+' '+(d?'clr':sk?'skp':n?'now':'lock')+(i===jc?' hit':'')+(n?' tappable':'')+(isNowSlot?' nowtime':'');
+    el.className='stg boss key '+(d?'clr':sk?'skp':n?'now':'lock')+(i===jc?' hit':'')+(n?' tappable':'');
     if(n)el.setAttribute('data-boss','1');
     var ic=d?'👑':sk?'⨯':n?(tt.st&&tt.run?'⏸':'▶'):'';
     el.innerHTML=
-      (isNowSlot?'<div class="now-tag">지금</div>':'')+
       '<div class="blk-wrap">'+
         (n?'<div class="hero"><svg class="hero-cat" viewBox="0 0 24 24" shape-rendering="crispEdges"><rect x="3" y="0" width="3" height="3" fill="#F08030"/><rect x="15" y="0" width="3" height="3" fill="#F08030"/><rect x="3" y="3" width="15" height="3" fill="#F08030"/><rect x="3" y="6" width="3" height="3" fill="#F08030"/><rect x="6" y="6" width="3" height="3" fill="#0A0A1A"/><rect x="9" y="6" width="3" height="3" fill="#F08030"/><rect x="12" y="6" width="3" height="3" fill="#0A0A1A"/><rect x="15" y="6" width="3" height="3" fill="#F08030"/><rect x="3" y="9" width="6" height="3" fill="#F08030"/><rect x="9" y="9" width="3" height="3" fill="#FF7CA0"/><rect x="12" y="9" width="6" height="3" fill="#F08030"/><rect x="0" y="12" width="3" height="3" fill="#FCFCFC"/><rect x="3" y="12" width="15" height="3" fill="#F08030"/><rect x="18" y="12" width="3" height="3" fill="#F08030"/><rect x="3" y="15" width="12" height="3" fill="#F08030"/><rect x="21" y="15" width="3" height="3" fill="#F08030"/><rect x="3" y="18" width="12" height="3" fill="#F08030"/><rect x="21" y="18" width="3" height="3" fill="#F08030"/><rect x="3" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="6" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="12" y="21" width="3" height="3" fill="#0A0A1A"/><rect x="15" y="21" width="3" height="3" fill="#0A0A1A"/></svg></div>':'')+
         '<div class="blk">'+ic+'</div>'+
       '</div>'+
-      '<div class="stg-slot '+slc+'">'+slot+'</div>';
+      '<div class="stg-slot key">'+bossLabel(s.id)+'</div>';
     w.appendChild(el);
   }
   var pole=document.createElement('div');
@@ -1555,9 +1630,8 @@ function rCore(){
     if(beat)cnt++;
     var card=q('cq-'+i),nu=q('cqn-'+i),st=q('cqs-'+i),sl=q('cqsl-'+i);
     var sd=STG[idx];
-    if(sl&&sd&&sd.slot){sl.textContent=sd.slot;sl.className='cq-slot '+(sd.slot==='오전'?'am':sd.slot==='오후'?'pm':'ev');}
-    var slc=sd&&sd.slot?(sd.slot==='오전'?' am':sd.slot==='오후'?' pm':' ev'):'';
-    card.className='cq'+slc+(beat?' beat':skp?' skip':now?' now':'');
+    if(sl)sl.style.display='none';
+    card.className='cq'+(beat?' beat':skp?' skip':now?' now':'');
     nu.textContent=beat?'✓':skp?'⨯':(i+1);
     st.textContent=beat?'격파':skp?'넘어감':now?'교전 중':'대기';
   }
@@ -1575,12 +1649,11 @@ function rQuest(){
   var tg=q('q-tag');
   if(tg){tg.textContent=anc?'🚩':s.boss?'':s.isRest?'':s.bonus?'★':'';tg.className='q-tag'+(anc?' anchor':s.boss?' boss':s.isRest?' rest':s.bonus?' bonus':'');}
   var sl=q('q-slot');
-  if(s.boss&&s.slot){sl.style.display='';sl.textContent=s.slot+' '+(s.rec||'');sl.className='q-slot '+(s.slot==='오전'?'am':s.slot==='오후'?'pm':'ev');}
+  if(s.boss){sl.style.display='';sl.textContent=bossLabel(s.id);sl.className='q-slot key';}
   else sl.style.display='none';
   var sk=q('btn-skip');
   if(sk){
-    if(s.boss&&s.slot&&!tt.st&&slotPassed(s.slot)){sk.style.display='';sk.textContent='⨯ '+s.slot+' 넘어가기';}
-    else sk.style.display='none';
+    sk.style.display='none';
   }
   q('anchor').style.display=anc?'':'none';
   q('hp').style.display=s.boss?'':'none';
@@ -1605,11 +1678,11 @@ function rList(){
     var s=STG[i],d=isDone(i),sk=isSkip(i),n=(i===S.cur)&&!sk;
     var el=document.createElement('div');
     el.className='sr '+(d?'done':sk?'skip':n?'now':'up')+(s.boss?' core':s.isRest?' rest':'');
-    var slot=(s.boss&&s.slot)?'<span class="sr-slot '+(s.slot==='오전'?'am':s.slot==='오후'?'pm':'ev')+'">'+s.slot+'</span>':'';
+    var slot=s.boss?'<span class="sr-slot key">'+bossLabel(s.id)+'</span>':'';
     var bd=s.boss?'<span class="sr-b bb">BOSS</span>':s.isRest?'<span class="sr-b br">SAVE</span>':s.bonus?'<span class="sr-b bn">BONUS</span>':'';
     var mt='<span class="sr-t">'+s.t+'</span>';
     if(d&&S.tl[s.id]){var l=S.tl[s.id];var c=l.d<0?'df':'ds';var t=l.d<0?'-'+Math.abs(l.d)+'M':'+'+l.d+'M';mt+='<span class="sr-a">'+fm(l.am)+'</span><span class="sr-d '+c+'">'+t+'</span>';}
-    var ub=d?'<button class="sr-u" onclick="undo('+i+')">↺</button>':(s.boss&&!sk&&!d?'<button class="sr-skip-b" onclick="event.stopPropagation();skipFrom('+i+')">넘기기</button>':'');
+    var ub=d?'<button class="sr-u" onclick="undo('+i+')">↺</button>':(s.boss&&sk?'<button class="sr-skip-b redo" onclick="event.stopPropagation();unskipTo('+i+')">다시하기</button>':(s.boss&&!d?'<button class="sr-skip-b" onclick="event.stopPropagation();skipFrom('+i+')">미루기</button>':''));
     var ic=d?(s.boss?'👑':'✓'):sk?'⨯':n?'▶':(s.boss?'🏰':'?');
     el.innerHTML='<div class="sr-ic">'+ic+'</div><div class="sr-i"><div class="sr-n">'+slot+s.n+'</div><div class="sr-m">'+mt+'</div></div>'+bd+ub;
     if(!d && !sk && !n && !s.isRest && !(s.bonus && bossCount()<3)){
@@ -1670,7 +1743,7 @@ function slotPassed(slot){
 }
 function skipSlot(){
   var s=STG[S.cur];if(!s||!s.boss)return;
-  if(!confirm(s.slot+' 시간대를 넘어갈까요?\n(못 한 게 아니라 넘어감으로 기록돼요)'))return;
+  if(!confirm(s.n+'을(를) 나중으로 미룰까요?\n(못 한 게 아니라 넘어감으로 기록돼요)'))return;
   if(tt.run||tt.pause)parkTimer();
   if(S.skip.indexOf(S.cur)<0)S.skip.push(S.cur);
   S.combo=0; SFX.down();
