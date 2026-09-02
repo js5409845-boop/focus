@@ -823,17 +823,17 @@ body.shaking{animation:shake .48s cubic-bezier(.36,.07,.19,.97)}
   <div class="core-list">
     <div class="cq" id="cq-0">
       <div class="cq-n" id="cqn-0">1</div>
-      <span class="cq-name">모의고사&nbsp;1회</span>
+      <span class="cq-name">파트5 모의고사&nbsp;4회</span>
       <span class="cq-st" id="cqs-0">대기</span>
     </div>
     <div class="cq" id="cq-1">
       <div class="cq-n" id="cqn-1">2</div>
-      <span class="cq-name">포트폴리오</span>
+      <span class="cq-name">토끼 모의고사&nbsp;3회</span>
       <span class="cq-st" id="cqs-1">대기</span>
     </div>
     <div class="cq" id="cq-2">
       <div class="cq-n" id="cqn-2">3</div>
-      <span class="cq-name">인적성</span>
+      <span class="cq-name">멜토스 정리</span>
       <span class="cq-st" id="cqs-2">대기</span>
     </div>
   </div>
@@ -1065,17 +1065,16 @@ function fxCombo(n){
 
 /* 데이터 */
 var STG=[
-  {id:'mock', t:'밤 10:13-새벽 12:43', n:'모의고사 1회',       d:'핵심 1',  m:'끝까지 한 번에.\n실제 시험처럼 바로 답해.',           rest:null,boss:true, isRest:false,bonus:false,pm:150,pt:350},
-  {id:'br1',  t:'새벽 12:43-12:53', n:'짧은 휴식',          d:'10분 자동 타이머', m:'',                                        rest:'핵심 1개 완료.\n10분 뒤 다음으로.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'port', t:'새벽 12:53-1:23', n:'포트폴리오',         d:'핵심 2',  m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.', rest:null,boss:true, isRest:false,bonus:false,pm:30,pt:400},
-  {id:'br2',  t:'새벽 1:23-1:33', n:'짧은 휴식',          d:'10분 자동 타이머', m:'',                                        rest:'핵심 2개 완료.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
-  {id:'apt',  t:'새벽 1:33-2:18', n:'인적성',             d:'핵심 3',  m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',       rest:null,boss:true, isRest:false,bonus:false,pm:45,pt:350},
-  {id:'bn_mock',t:'보너스', n:'보너스 · 모의고사 1회', d:'컨디션 남았으면', m:'한 회 더.\n안 해도 이미 클리어예요.',            rest:null,boss:false,isRest:false,bonus:true, pm:150,pt:200},
-  {id:'bn_apt', t:'보너스', n:'보너스 · 인적성',       d:'컨디션 남았으면', m:'하나만 더 풀고 마무리.\n안 해도 이미 클리어예요.', rest:null,boss:false,isRest:false,bonus:true, pm:45,pt:200},
-  {id:'bn_edu', t:'보너스', n:'보너스 · 교육자료 분석', d:'컨디션 남았으면', m:'교육자료 하나 골라 분석해보기.\n안 해도 이미 클리어예요.', rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
+  {id:'p5',   t:'오전 9:42-10:42', n:'파트5 최신기출 모의고사 4회', d:'핵심 1',  m:'끝까지 한 번에.\n실제 시험처럼 바로 답해.',            rest:null,boss:true, isRest:false,bonus:false,pm:60,pt:350},
+  {id:'br1',  t:'10:42-10:52',      n:'짧은 휴식',                d:'10분 자동 타이머', m:'',                                       rest:'핵심 1개 완료.\n10분 뒤 다음으로.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'tk',   t:'오전 10:52-낮 12:52', n:'토끼 최신 모의고사 3회', d:'핵심 2',  m:'한 세트 통으로 시간 재고.\n모르는 건 찍고 넘어가.',       rest:null,boss:true, isRest:false,bonus:false,pm:120,pt:400},
+  {id:'br2',  t:'낮 12:52-1:02',    n:'짧은 휴식',                d:'10분 자동 타이머', m:'',                                       rest:'핵심 2개 완료.\n마지막 하나 남았습니다.',boss:false,isRest:true,bonus:false,pm:10,pt:60},
+  {id:'melt', t:'낮 1:02-2:02',     n:'멜토스 정리',              d:'핵심 3',  m:'오늘 한 것 / 고칠 것 한 곳에 정리.\n완벽 말고 일단 채우기.', rest:null,boss:true, isRest:false,bonus:false,pm:60,pt:350},
+  {id:'bn_p2', t:'보너스', n:'보너스 · 파트2 30초 맞게 연습', d:'컨디션 남았으면', m:'30초 감각 맞춰 반복.\n안 해도 이미 클리어예요.',       rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
+  {id:'bn_melt', t:'보너스', n:'보너스 · 멜토스',             d:'컨디션 남았으면', m:'멜토스 한 번 더 정리.\n안 해도 이미 클리어예요.',       rest:null,boss:false,isRest:false,bonus:true, pm:30,pt:200},
 ];
-var BOSS=['mock','port','apt'];
-var BM=[{id:'mock'},{id:'port'},{id:'apt'}];
+var BOSS=['p5','tk','melt'];
+var BM=[{id:'p5'},{id:'tk'},{id:'melt'}];
 
 var S={cur:0,done:[],skip:[],tl:{},combo:0,best:0,restEnd:null,restPaused:null,acc:{},tt:null,away:{c:0,ms:0}};
 var pn=null,jc=-1;
