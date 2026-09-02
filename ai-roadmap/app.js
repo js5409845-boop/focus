@@ -12,6 +12,29 @@
   var K = S.KEYS;
 
   // ---------------------------------------------------------------
+  // 구글시트 자동 수집 (선택 사항)
+  // 배포한 Google Apps Script 웹앱 URL을 여기에 채워 넣으면, 참여자가
+  // 진단/Challenge/설문을 완료할 때마다 백그라운드로 자동 전송된다.
+  // 비워두면(기본값) 아무 일도 하지 않고 localStorage만 사용한다.
+  // 설정 방법: ai-roadmap/google-apps-script.gs 참고.
+  // ---------------------------------------------------------------
+  var SHEET_WEBHOOK_URL = '';
+
+  /** 실패해도 로컬 데이터/화면 흐름에는 영향 없는 fire-and-forget 전송 */
+  function syncToSheet(sheetName, data) {
+    if (!SHEET_WEBHOOK_URL || typeof fetch !== 'function') return;
+    try {
+      fetch(SHEET_WEBHOOK_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Apps Script는 CORS preflight를 처리하지 않으므로 simple request로 보낸다
+        keepalive: true,
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ sheet: sheetName, data: data })
+      }).catch(function () { /* 오프라인 등 - 무시 (로컬 데이터는 이미 저장됨) */ });
+    } catch (e) { /* fetch 자체를 사용할 수 없는 환경 - 무시 */ }
+  }
+
+  // ---------------------------------------------------------------
   // 유틸
   // ---------------------------------------------------------------
   function esc(str) {
@@ -264,6 +287,7 @@
     S.remove(K.POST_SURVEY);
     S.remove(K.REWARD_OPT);
 
+    syncToSheet('assessment', buildFullRecord());
     nav('#/result');
   };
 
@@ -476,6 +500,7 @@
       S.set(K.ROADMAP, roadmap);
     }
     pendingSatisfactionFor = null;
+    syncToSheet('assessment', buildFullRecord());
     render();
   };
 
@@ -538,6 +563,7 @@
     draft.completedAt = new Date(S.now()).toISOString();
     S.set(K.POST_SURVEY, draft);
 
+    syncToSheet('assessment', buildFullRecord());
     nav('#/compare');
   };
 
@@ -662,12 +688,14 @@
       return;
     }
     var participant = S.get(K.PARTICIPANT);
-    S.set(K.REWARD_DATA, {
+    var rewardData = {
       participantId: participant ? participant.participantId : '',
       nameOrNickname: name.trim(),
       contact: contact.trim(),
       submittedAt: new Date(S.now()).toISOString()
-    });
+    };
+    S.set(K.REWARD_DATA, rewardData);
+    syncToSheet('reward', rewardData);
     render();
   };
 
@@ -732,6 +760,14 @@
     render();
   };
 
+  window.devManualSync = function () {
+    var record = buildFullRecord();
+    syncToSheet('assessment', record);
+    var reward = S.get(K.REWARD_DATA);
+    if (reward) syncToSheet('reward', reward);
+    alert('전송을 시도했습니다 (no-cors라 성공 여부는 구글시트에서 직접 확인해야 해요).');
+  };
+
   window.devClearAll = function () {
     if (confirm('저장된 모든 진단/Challenge/설문 데이터를 삭제할까요?')) {
       S.clearAll();
@@ -760,6 +796,15 @@
       '<h2>개발자 도구</h2>' +
       '<p class="fine-print">일반 사용자에게는 노출되지 않는 화면입니다. 접근: <code>#/dev</code> 또는 <code>?dev=1</code></p>' +
       '<button class="btn btn-secondary btn-block" onclick="exportCsv()">CSV Export</button>' +
+      '</section>' +
+
+      '<section class="card">' +
+      '<h3>구글시트 자동 수집</h3>' +
+      (SHEET_WEBHOOK_URL
+        ? '<p class="muted small">✅ 연동됨 - 진단/Challenge/설문 완료 시 자동 전송됩니다.</p>'
+        : '<p class="muted small">⚪ 미설정 - app.js 상단의 <code>SHEET_WEBHOOK_URL</code>을 배포한 Apps Script 웹앱 URL로 채우면 활성화됩니다. (google-apps-script.gs 참고)</p>') +
+      '<button class="btn btn-ghost btn-block" onclick="devManualSync()">지금 현재 데이터 수동 동기화</button>' +
+      '<p class="fine-print">no-cors 전송이라 성공 여부를 브라우저에서 확인할 수 없습니다. 구글시트에 실제로 값이 들어왔는지 직접 확인하세요.</p>' +
       '</section>' +
 
       '<section class="card">' +
