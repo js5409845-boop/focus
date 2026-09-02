@@ -18,7 +18,6 @@
   'use strict';
 
   var DIMENSIONS = DATA.DIMENSIONS;
-  var MS_PER_DAY = 24 * 60 * 60 * 1000;
 
   function round1(n) {
     return Math.round(n * 10) / 10;
@@ -90,37 +89,6 @@
       code += ID_CHARS[Math.floor(rng() * ID_CHARS.length)];
     }
     return 'AI-' + code;
-  }
-
-  function daysSince(isoDateString, now) {
-    if (!isoDateString) return -Infinity;
-    now = now == null ? Date.now() : now;
-    var start = new Date(isoDateString).getTime();
-    if (isNaN(start)) return -Infinity;
-    return (now - start) / MS_PER_DAY;
-  }
-
-  /** 사전진단 완료일 기준 7일 경과 여부 */
-  function isPostCheckUnlocked(preCompletedAt, now) {
-    return daysSince(preCompletedAt, now) >= 7;
-  }
-
-  var CHANGE_KEYS = DIMENSIONS.concat(['overall']);
-
-  /** 사전/사후 점수 변화값 계산 */
-  function calcChange(pre, post) {
-    var result = {};
-    CHANGE_KEYS.forEach(function (k) {
-      result[k] = round1(post[k] - pre[k]);
-    });
-    return result;
-  }
-
-  /** 변화폭(절대값)이 가장 큰 영역 (overall 제외, 5개 영역 중) */
-  function mostChangedDimension(change) {
-    return DIMENSIONS.slice().sort(function (a, b) {
-      return Math.abs(change[b]) - Math.abs(change[a]);
-    })[0];
   }
 
   var EXPERIENCE_DIFFICULTY_MAP = {
@@ -203,12 +171,10 @@
   var CSV_COLUMNS = [
     'participantId',
     'preExploration', 'preInstruction', 'preVerification', 'preApplication', 'preExpansion', 'preOverall', 'preLevel',
-    'postExploration', 'postInstruction', 'postVerification', 'postApplication', 'postExpansion', 'postOverall', 'postLevel',
-    'explorationChange', 'instructionChange', 'verificationChange', 'applicationChange', 'expansionChange', 'overallChange',
     'recommendedChallenges',
     'challengeCompletion',
     'helpfulness', 'behaviorChange', 'satisfaction',
-    'createdAt', 'postCompletedAt'
+    'createdAt', 'surveyCompletedAt'
   ];
 
   /** 참가자 1명 분량의 record(전체 데이터 취합 결과)를 CSV 컬럼 순서에 맞는 배열로 변환 */
@@ -245,10 +211,6 @@
     getGrowthPoints: getGrowthPoints,
     getStrength: getStrength,
     generateParticipantId: generateParticipantId,
-    daysSince: daysSince,
-    isPostCheckUnlocked: isPostCheckUnlocked,
-    calcChange: calcChange,
-    mostChangedDimension: mostChangedDimension,
     recommendChallenges: recommendChallenges,
     findChallengeById: findChallengeById,
     CSV_COLUMNS: CSV_COLUMNS,

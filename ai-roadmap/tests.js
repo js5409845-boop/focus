@@ -1,8 +1,13 @@
 /* ============================================================
  * AI 활용역량 로드맵 - 순수 로직 / 저장소 단위 테스트
  * 실행: node ai-roadmap/tests.js
- * (요구사항 29의 1~11번 항목을 다룬다. 12번 모바일 UI는 브라우저에서
- *  수동으로 확인한다.)
+ *
+ * 서비스 범위를 "진단 → 개인화 → Challenge 제안 → 만족도 조사"로
+ * 좁히면서 사후 재진단(7일 후 재측정)과 사전/사후 비교 기능을
+ * 제거했다. 그에 따라 원 요구사항 29의 7번(7일 게이팅)과 9번
+ * (사전/사후 변화값)은 더 이상 해당 없음 — 이 파일은 나머지
+ * 1~6, 8, 10~11번 항목을 다룬다. 12번 모바일 UI는 브라우저에서
+ * 수동으로 확인한다.
  * ============================================================ */
 var assert = require('assert');
 var DATA = require('./challenges.js');
@@ -154,61 +159,19 @@ group('5~6. 추천 Challenge 목록 저장 및 새로고침 후 유지(저장소
 });
 
 // ---------------------------------------------------------------
-group('7. 사전진단 완료일 기준 7일 전/후 상태', function () {
-  test('6일 23시간 경과 시점에는 아직 잠겨있다', function () {
-    var pre = new Date('2026-01-01T00:00:00.000Z').toISOString();
-    var now = new Date('2026-01-07T23:00:00.000Z').getTime();
-    assert.strictEqual(LOGIC.isPostCheckUnlocked(pre, now), false);
-  });
-
-  test('정확히 7일 경과 시점에는 열린다', function () {
-    var pre = new Date('2026-01-01T00:00:00.000Z').toISOString();
-    var now = new Date('2026-01-08T00:00:00.000Z').getTime();
-    assert.strictEqual(LOGIC.isPostCheckUnlocked(pre, now), true);
-  });
-
-  test('7일 하고도 며칠 더 지난 시점에도 열려있다', function () {
-    var pre = new Date('2026-01-01T00:00:00.000Z').toISOString();
-    var now = new Date('2026-01-20T00:00:00.000Z').getTime();
-    assert.strictEqual(LOGIC.isPostCheckUnlocked(pre, now), true);
-  });
-});
-
-// ---------------------------------------------------------------
-group('8. 사전/사후 데이터가 동일 Participant ID로 연결', function () {
-  test('participant를 저장하면 사전/사후 스코어 모두 같은 participantId를 참조할 수 있다', function () {
+// 8. Participant ID가 진단 결과와 만족도 조사 데이터를 함께 연결하는지
+group('8. 참여코드로 진단 결과와 만족도 조사 데이터가 연결됨', function () {
+  test('participant를 저장하면 preScores/survey 모두 같은 participantId를 참조할 수 있다', function () {
     var backend = STORAGE.createMemoryBackend();
     var store = STORAGE.createStore(backend);
     var pid = LOGIC.generateParticipantId(function () { return 0.1; });
     store.set(store.KEYS.PARTICIPANT, { participantId: pid, createdAt: new Date().toISOString() });
     store.set(store.KEYS.PRE_SCORES, { overall: 2.8 });
-    store.set(store.KEYS.POST_SCORES, { overall: 3.4 });
+    store.set(store.KEYS.SURVEY, { satisfaction: 5, completedAt: new Date().toISOString() });
 
     var participant = store.get(store.KEYS.PARTICIPANT);
     assert.strictEqual(participant.participantId, pid);
     assert.ok(/^AI-[A-Z0-9]{4}$/.test(pid));
-  });
-});
-
-// ---------------------------------------------------------------
-group('9. 사전/사후 변화값 계산', function () {
-  test('변화값 = 사후 - 사전 (소수 첫째 자리)', function () {
-    var pre = { exploration: 3.1, instruction: 2.8, verification: 2.4, application: 3.2, expansion: 2.5, overall: 2.8 };
-    var post = { exploration: 3.6, instruction: 3.3, verification: 3.3, application: 3.7, expansion: 3.1, overall: 3.4 };
-    var change = LOGIC.calcChange(pre, post);
-    assert.strictEqual(change.exploration, 0.5);
-    assert.strictEqual(change.instruction, 0.5);
-    assert.strictEqual(change.verification, 0.9);
-    assert.strictEqual(change.application, 0.5);
-    assert.strictEqual(change.expansion, 0.6);
-    assert.strictEqual(change.overall, 0.6);
-  });
-
-  test('가장 크게 변화한 영역을 찾을 수 있다', function () {
-    var pre = { exploration: 3.1, instruction: 2.8, verification: 2.4, application: 3.2, expansion: 2.5, overall: 2.8 };
-    var post = { exploration: 3.6, instruction: 3.3, verification: 3.3, application: 3.7, expansion: 3.1, overall: 3.4 };
-    var change = LOGIC.calcChange(pre, post);
-    assert.strictEqual(LOGIC.mostChangedDimension(change), 'verification');
   });
 });
 

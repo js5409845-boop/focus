@@ -21,13 +21,10 @@
     PRE_ASSESSMENT: 'preAssessment', // {q1..q10, difficulty, goal, experience, completedAt}
     PRE_SCORES: 'preScores', // {exploration..expansion, overall, level}
     ROADMAP: 'roadmap', // {recommendedChallenges:[id]} - 제안까지가 서비스 역할이라 완료 여부는 추적하지 않는다
-    POST_ASSESSMENT: 'postAssessment', // {q1..q10, completedAt}
-    POST_SCORES: 'postScores',
-    POST_SURVEY: 'postSurvey', // {challengeCompletion, helpfulness, behaviorChange, satisfaction, feedback, completedAt}
+    SURVEY: 'survey', // {challengeCompletion, helpfulness, behaviorChange, satisfaction, feedback, completedAt} - 재진단/재측정 없이 언제든 참여 가능
     REWARD_DATA: 'rewardData', // {participantId, nameOrNickname, contact, submittedAt} - 진단 데이터와 분리
     REWARD_OPT: 'rewardOpt', // 'in' | 'out' | null
-    DEV_MODE: 'devMode', // '1' | null
-    DEV_DATE_OFFSET_MS: 'devDateOffsetMs' // number, 테스트용 "현재 시각" 보정값
+    DEV_MODE: 'devMode' // '1' | null
   };
 
   /**
@@ -68,19 +65,12 @@
       });
     }
 
-    /** dev 모드 보정이 적용된 "현재 시각"(ms) */
-    function now() {
-      var offset = get(KEYS.DEV_DATE_OFFSET_MS, 0) || 0;
-      return Date.now() + offset;
-    }
-
     return {
       KEYS: KEYS,
       get: get,
       set: set,
       remove: remove,
-      clearAll: clearAll,
-      now: now
+      clearAll: clearAll
     };
   }
 

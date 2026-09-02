@@ -46,13 +46,6 @@
       .replace(/'/g, '&#39;');
   }
 
-  function fmtDate(iso) {
-    if (!iso) return '';
-    var d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
-  }
-
   function nav(hash) {
     if (location.hash === hash) {
       render();
@@ -140,7 +133,7 @@
       flowStep('1', '진단', '현재 AI 활용 방식을 확인하세요.') +
       flowStep('2', 'Challenge', '나에게 필요한 AI 활용 과제를 받아보세요.') +
       flowStep('3', '실행', '실제 취업 준비에 적용해보세요.') +
-      flowStep('4', '변화 확인', '7일 후 다시 확인해보세요.') +
+      flowStep('4', '후기', '경험이 어땠는지 들려주세요.') +
       '</section>';
     return shell(html, { footer: true });
   }
@@ -161,51 +154,34 @@
       '<div class="scale-legend">' +
       D.SCALE_LABELS.map(function (l, i) { return '<div class="sl-item"><span class="sl-num">' + (i + 1) + '</span>' + esc(l) + '</div>'; }).join('') +
       '</div>' +
-      '<button class="btn btn-primary btn-block" onclick="startQuiz(\'pre\')">진단 시작하기</button>' +
+      '<button class="btn btn-primary btn-block" onclick="startQuiz()">진단 시작하기</button>' +
       '</section>';
     return shell(html, { topbar: topbar('사전 Self-Check', '#/') });
   }
 
-  function pagePostIntro() {
-    var html = '' +
-      '<section class="card">' +
-      '<h2>사후 Self-Check</h2>' +
-      '<p>처음 진단했을 때와 비교하여, 현재 자신의 AI 활용 방식을 기준으로 응답해주세요.</p>' +
-      '<div class="scale-legend">' +
-      D.SCALE_LABELS.map(function (l, i) { return '<div class="sl-item"><span class="sl-num">' + (i + 1) + '</span>' + esc(l) + '</div>'; }).join('') +
-      '</div>' +
-      '<button class="btn btn-primary btn-block" onclick="startQuiz(\'post\')">사후진단 시작하기</button>' +
-      '</section>';
-    return shell(html, { topbar: topbar('사후 Self-Check', '#/roadmap') });
-  }
-
-  window.startQuiz = function (mode) {
-    nav('#/' + mode + '/q/1');
+  window.startQuiz = function () {
+    nav('#/pre/q/1');
   };
 
-  function draftKey(mode) {
-    return mode === 'pre' ? K.PRE_ASSESSMENT : K.POST_ASSESSMENT;
-  }
-
-  function pageQuizQuestion(mode, n) {
+  function pageQuizQuestion(n) {
     n = parseInt(n, 10);
     var q = D.QUESTIONS[n - 1];
     if (!q) { nav('#/'); return ''; }
-    var draft = S.get(draftKey(mode), {}) || {};
+    var draft = S.get(K.PRE_ASSESSMENT, {}) || {};
     var current = draft[q.id];
 
     var options = [1, 2, 3, 4, 5].map(function (v) {
       var selected = current === v ? ' selected' : '';
       return '' +
-        '<button class="scale-opt' + selected + '" onclick="selectScale(\'' + mode + '\',\'' + q.id + '\',' + v + ')">' +
+        '<button class="scale-opt' + selected + '" onclick="selectScale(\'' + q.id + '\',' + v + ')">' +
         '<span class="scale-opt-num">' + v + '</span>' +
         '<span class="scale-opt-label">' + esc(D.SCALE_LABELS[v - 1]) + '</span>' +
         '</button>';
     }).join('');
 
-    var backHash = n === 1 ? (mode === 'pre' ? '#/pre/intro' : '#/post/intro') : '#/' + mode + '/q/' + (n - 1);
-    var nextHash = n === 10 ? (mode === 'pre' ? '#/pre/personal' : '#/post-survey') : '#/' + mode + '/q/' + (n + 1);
-    var nextLabel = n === 10 ? (mode === 'pre' ? '다음' : '결과 확인하기') : '다음 문항';
+    var backHash = n === 1 ? '#/pre/intro' : '#/pre/q/' + (n - 1);
+    var nextHash = n === 10 ? '#/pre/personal' : '#/pre/q/' + (n + 1);
+    var nextLabel = n === 10 ? '다음' : '다음 문항';
 
     var html = '' +
       '<section class="card quiz-card">' +
@@ -215,13 +191,13 @@
       '<button class="btn btn-primary btn-block" ' + (current ? '' : 'disabled') + ' onclick="' + (current ? 'nav(\'' + nextHash + '\')' : '') + '">' + nextLabel + '</button>' +
       '</section>';
 
-    return shell(html, { topbar: topbar(mode === 'pre' ? '사전 Self-Check' : '사후 Self-Check', backHash, { current: n, total: 10 }) });
+    return shell(html, { topbar: topbar('사전 Self-Check', backHash, { current: n, total: 10 }) });
   }
 
-  window.selectScale = function (mode, qid, value) {
-    var draft = S.get(draftKey(mode), {}) || {};
+  window.selectScale = function (qid, value) {
+    var draft = S.get(K.PRE_ASSESSMENT, {}) || {};
     draft[qid] = value;
-    S.set(draftKey(mode), draft);
+    S.set(K.PRE_ASSESSMENT, draft);
     render();
   };
 
@@ -266,7 +242,7 @@
       alert('경험 정도를 선택해주세요.');
       return;
     }
-    draft.completedAt = new Date(S.now()).toISOString();
+    draft.completedAt = new Date().toISOString();
     S.set(K.PRE_ASSESSMENT, draft);
 
     var scores = L.calcDimensionScores(draft);
@@ -275,15 +251,13 @@
     S.set(K.PRE_SCORES, preScores);
 
     if (!S.get(K.PARTICIPANT)) {
-      S.set(K.PARTICIPANT, { participantId: L.generateParticipantId(), createdAt: new Date(S.now()).toISOString() });
+      S.set(K.PARTICIPANT, { participantId: L.generateParticipantId(), createdAt: new Date().toISOString() });
     }
 
     var picks = L.recommendChallenges(scores, draft.experience, draft.goal);
     S.set(K.ROADMAP, { recommendedChallenges: picks.map(function (c) { return c.id; }) });
-    // 재시작 시 사후 데이터도 초기화 (동일 브라우저에서 새로 진단을 시작한 경우)
-    S.remove(K.POST_ASSESSMENT);
-    S.remove(K.POST_SCORES);
-    S.remove(K.POST_SURVEY);
+    // 재시작 시 설문/경품 선택도 초기화 (동일 브라우저에서 새로 진단을 시작한 경우)
+    S.remove(K.SURVEY);
     S.remove(K.REWARD_OPT);
 
     syncToSheet('assessment', buildFullRecord());
@@ -311,7 +285,7 @@
       '<section class="card participant-card">' +
       '<div class="participant-label">당신의 참여코드</div>' +
       '<div class="participant-id">' + participant.participantId + '</div>' +
-      '<p class="muted small">7일 후 사후진단에서 동일한 참여코드를 사용하면 나의 변화를 확인할 수 있어요.</p>' +
+      '<p class="muted small">만족도 조사에 참여하실 때도 이 코드가 함께 기록돼요.</p>' +
       '</section>' +
 
       '<section class="card level-card">' +
@@ -372,43 +346,30 @@
       '<p class="muted small">여기까지가 이 서비스의 제안이에요. 실제 실행은 각자의 방식과 속도로 해보시면 됩니다.</p>' +
       '</section>' +
       '<section class="challenge-list">' + cardsHtml + '</section>' +
-      dashboardSection() +
+      surveySection() +
       (isDevMode() ? '<a class="btn btn-ghost btn-block" href="#/dev">개발자 도구</a>' : '');
 
     return shell(html, { topbar: topbar('MY AI ROADMAP', '#/') });
   }
 
-  function dashboardSection() {
-    var pre = S.get(K.PRE_ASSESSMENT);
-    var postSurvey = S.get(K.POST_SURVEY);
-    if (postSurvey && postSurvey.completedAt) {
+  function surveySection() {
+    var survey = S.get(K.SURVEY);
+    if (survey && survey.completedAt) {
       return '' +
         '<section class="card dashboard-card done-card">' +
         '<div class="db-emoji">✅</div>' +
-        '<p><strong>사후진단을 완료했어요.</strong></p>' +
-        '<p class="muted small">사전·사후 비교와 만족도 결과를 다시 볼 수 있어요.</p>' +
-        '<button class="btn btn-secondary btn-block" onclick="nav(\'#/compare\')">나의 변화 보기</button>' +
-        '</section>';
-    }
-    if (!pre || !pre.completedAt) return '';
-
-    var unlocked = L.isPostCheckUnlocked(pre.completedAt, S.now());
-    if (!unlocked) {
-      var remaining = Math.max(0, Math.ceil(7 - L.daysSince(pre.completedAt, S.now())));
-      return '' +
-        '<section class="card dashboard-card locked-card">' +
-        '<p class="muted">사후진단은 7일 후 열립니다.</p>' +
-        '<p class="fine-print">약 ' + remaining + '일 후 사후진단을 진행할 수 있어요. (사전진단일: ' + fmtDate(pre.completedAt) + ')</p>' +
+        '<p><strong>만족도 조사에 참여해주셨어요.</strong></p>' +
+        '<p class="muted small">소중한 의견 감사합니다.</p>' +
+        '<button class="btn btn-secondary btn-block" onclick="nav(\'#/survey-done\')">제출한 내용 다시 보기</button>' +
         '</section>';
     }
     return '' +
       '<section class="card dashboard-card unlocked-card">' +
-      '<div class="db-emoji">🔔</div>' +
-      '<p><strong>AI 활용역량 로드맵을 시작한 지 7일이 되었어요.</strong></p>' +
-      '<p>지금의 AI 활용 방식을 다시 확인해보세요.</p>' +
-      '<p class="muted small">약 2분 소요</p>' +
-      '<div class="reward-note"><span>🎁</span> 사후 설문 참여자 중 20명을 추첨하여 커피 쿠폰을 드립니다.</div>' +
-      '<button class="btn btn-primary btn-block" onclick="nav(\'#/post/intro\')">사후진단 시작하기</button>' +
+      '<div class="db-emoji">💬</div>' +
+      '<p><strong>이 서비스가 어떠셨나요?</strong></p>' +
+      '<p class="muted small">약 1분 · 짧은 만족도 조사</p>' +
+      '<div class="reward-note"><span>🎁</span> 설문 참여자 중 20명을 추첨하여 커피 쿠폰을 드립니다.</div>' +
+      '<button class="btn btn-primary btn-block" onclick="nav(\'#/survey\')">만족도 조사 참여하기</button>' +
       '</section>';
   }
 
@@ -451,8 +412,8 @@
     return '<div class="survey-item"><label class="field-label">' + esc(label) + '</label><div class="scale-opts row">' + opts + '</div></div>';
   }
 
-  function pagePostSurvey() {
-    var draft = S.get(K.POST_SURVEY, {}) || {};
+  function pageSurvey() {
+    var draft = S.get(K.SURVEY, {}) || {};
     var completionOpts = COMPLETION_OPTIONS.map(function (opt) {
       var sel = draft.challengeCompletion === opt ? ' selected' : '';
       return '<button class="chip-opt' + sel + '" onclick="setSurveyField(\'challengeCompletion\',\'' + opt + '\')">' + esc(opt) + '</button>';
@@ -460,86 +421,59 @@
 
     var html = '' +
       '<section class="card">' +
-      '<h2>마지막 설문이에요</h2>' +
+      '<h2>만족도 조사</h2>' +
       '<div class="survey-item"><label class="field-label">추천받은 AI Challenge를 실제로 수행했나요?</label><div class="chip-list">' + completionOpts + '</div></div>' +
       scaleMini('helpfulness', draft.helpfulness, 'AI 활용역량 로드맵이 실제 취업 준비에 도움이 되었다.') +
       scaleMini('behaviorChange', draft.behaviorChange, '이번 경험 이후 AI를 활용하는 방식이 달라졌다.') +
       scaleMini('satisfaction', draft.satisfaction, '전체적으로 AI 활용역량 로드맵에 만족한다.') +
       '<label class="field-label">가장 도움이 되었던 점이나 개선했으면 하는 점이 있다면 작성해주세요.</label>' +
       '<textarea id="pf-feedback" class="text-input" rows="3" placeholder="자유롭게 적어주세요 (선택)">' + esc(draft.feedback || '') + '</textarea>' +
-      '<button class="btn btn-primary btn-block" onclick="submitPostSurvey()">결과 확인하기</button>' +
+      '<button class="btn btn-primary btn-block" onclick="submitSurvey()">제출하기</button>' +
       '</section>';
-    return shell(html, { topbar: topbar('사후 설문', '#/post/q/10') });
+    return shell(html, { topbar: topbar('만족도 조사', '#/roadmap') });
   }
 
   window.setSurveyField = function (name, value) {
-    var draft = S.get(K.POST_SURVEY, {}) || {};
+    var draft = S.get(K.SURVEY, {}) || {};
     draft[name] = value;
-    S.set(K.POST_SURVEY, draft);
+    S.set(K.SURVEY, draft);
     render();
   };
 
-  window.submitPostSurvey = function () {
-    var postAnswers = S.get(K.POST_ASSESSMENT, {}) || {};
-    postAnswers.completedAt = new Date(S.now()).toISOString();
-    S.set(K.POST_ASSESSMENT, postAnswers);
-
-    var scores = L.calcDimensionScores(postAnswers);
-    var levelInfo = L.calcLevel(scores.overall);
-    var postScores = Object.assign({}, scores, { level: levelInfo.level, levelLabel: levelInfo.label + ' · ' + levelInfo.name });
-    S.set(K.POST_SCORES, postScores);
-
-    var draft = S.get(K.POST_SURVEY, {}) || {};
+  window.submitSurvey = function () {
+    var draft = S.get(K.SURVEY, {}) || {};
     if (!draft.challengeCompletion || !draft.helpfulness || !draft.behaviorChange || !draft.satisfaction) {
       alert('모든 항목에 응답해주세요.');
       return;
     }
     draft.feedback = (document.getElementById('pf-feedback') || {}).value || '';
-    draft.completedAt = new Date(S.now()).toISOString();
-    S.set(K.POST_SURVEY, draft);
+    draft.completedAt = new Date().toISOString();
+    S.set(K.SURVEY, draft);
 
     syncToSheet('assessment', buildFullRecord());
-    nav('#/compare');
+    nav('#/survey-done');
   };
 
   // ---------------------------------------------------------------
-  // 8. 사전·사후 비교 + 만족도
+  // 8. 설문 완료 + 경품 안내
   // ---------------------------------------------------------------
-  function pageCompare() {
-    var pre = S.get(K.PRE_SCORES);
-    var post = S.get(K.POST_SCORES);
-    var survey = S.get(K.POST_SURVEY);
-    if (!pre || !post) { nav('#/roadmap'); return ''; }
+  function satisfactionRow(label, value) {
+    if (value == null) return '';
+    var v = Number(value);
+    return '<div class="satisfaction-row"><span>' + esc(label) + '</span><strong>' + v.toFixed(1) + ' / 5</strong></div>';
+  }
 
-    var change = L.calcChange(pre, post);
-    var mostChanged = L.mostChangedDimension(change);
+  function pageSurveyDone() {
+    var survey = S.get(K.SURVEY);
+    if (!survey || !survey.completedAt) { nav('#/roadmap'); return ''; }
 
-    var rowsHtml = D.DIMENSIONS.concat(['overall']).map(function (d) {
-      var label = d === 'overall' ? '전체' : D.DIMENSION_LABELS[d];
-      var delta = change[d];
-      var sign = delta > 0 ? '+' : '';
-      var cls = delta > 0 ? 'up' : (delta < 0 ? 'down' : 'flat');
-      return '' +
-        '<div class="compare-row' + (d === 'overall' ? ' overall' : '') + '">' +
-        '<div class="cr-label">' + label + '</div>' +
-        '<div class="cr-values">' + pre[d].toFixed(1) + ' → ' + post[d].toFixed(1) + '</div>' +
-        '<div class="cr-delta ' + cls + '">' + sign + delta.toFixed(1) + '</div>' +
-        '</div>';
-    }).join('');
-
-    var deltaVal = change[mostChanged];
-    var deltaWord = deltaVal > 0 ? '상승' : (deltaVal < 0 ? '하락' : '변화 없음');
-    var highlight = deltaVal === 0
-      ? '사전·사후 자기평가에서 뚜렷한 변화는 없었어요.'
-      : ('자기응답 기준 ' + D.DIMENSION_LABELS[mostChanged] + ' 영역 점수가 ' + Math.abs(deltaVal).toFixed(1) + '점 ' + deltaWord + '했어요.');
-
-    var satisfactionHtml = survey ? ('' +
+    var summaryHtml = '' +
       '<section class="card">' +
-      '<h3>서비스 경험</h3>' +
+      '<h3>보내주신 답변</h3>' +
       satisfactionRow('취업 준비 도움 정도', survey.helpfulness) +
       satisfactionRow('AI 활용 방식 변화', survey.behaviorChange) +
       satisfactionRow('전체 만족도', survey.satisfaction) +
-      '</section>') : '';
+      '</section>';
 
     var rewardHtml = S.get(K.REWARD_OPT)
       ? '<button class="btn btn-secondary btn-block" onclick="nav(\'#/reward\')">경품 응모 화면 다시 보기</button>'
@@ -555,21 +489,13 @@
 
     var html = '' +
       '<section class="card">' +
-      '<h2>나의 변화</h2>' +
-      '<div class="compare-list">' + rowsHtml + '</div>' +
-      '<p class="highlight-box">' + esc(highlight) + '</p>' +
-      '<p class="fine-print">이 결과는 역량이 향상되었다는 의미가 아니라, 사전·사후 자기응답을 비교한 값입니다.</p>' +
+      '<div class="db-emoji">🙏</div>' +
+      '<p><strong>설문에 참여해주셔서 감사합니다.</strong></p>' +
       '</section>' +
-      satisfactionHtml +
+      summaryHtml +
       rewardHtml;
 
-    return shell(html, { topbar: topbar('나의 변화', '#/roadmap'), footer: true });
-  }
-
-  function satisfactionRow(label, value) {
-    if (value == null) return '';
-    var v = Number(value);
-    return '<div class="satisfaction-row"><span>' + esc(label) + '</span><strong>' + v.toFixed(1) + ' / 5</strong></div>';
+    return shell(html, { topbar: topbar('설문 완료', '#/roadmap'), footer: true });
   }
 
   // ---------------------------------------------------------------
@@ -582,14 +508,14 @@
 
   function pageReward() {
     var choice = S.get(K.REWARD_OPT);
-    if (!choice) { nav('#/compare'); return ''; }
+    if (!choice) { nav('#/survey-done'); return ''; }
 
     if (choice === 'out') {
       return shell('' +
         '<section class="card">' +
         '<p>참여해주셔서 감사합니다. AI 활용역량 로드맵 경험은 여기까지예요.</p>' +
         '<button class="btn btn-secondary btn-block" onclick="nav(\'#/roadmap\')">로드맵으로 돌아가기</button>' +
-        '</section>', { topbar: topbar('경품 추첨', '#/compare') });
+        '</section>', { topbar: topbar('경품 추첨', '#/survey-done') });
     }
 
     var existing = S.get(K.REWARD_DATA);
@@ -599,7 +525,7 @@
         '<p>🎉 경품 응모가 완료되었습니다.</p>' +
         '<p class="muted small">참여코드: ' + existing.participantId + '</p>' +
         '<button class="btn btn-secondary btn-block" onclick="nav(\'#/roadmap\')">로드맵으로 돌아가기</button>' +
-        '</section>', { topbar: topbar('경품 추첨', '#/compare') });
+        '</section>', { topbar: topbar('경품 추첨', '#/survey-done') });
     }
 
     var html = '' +
@@ -612,7 +538,7 @@
       '<input id="rw-contact" class="text-input" type="text" placeholder="휴대폰 번호 또는 이메일" />' +
       '<button class="btn btn-primary btn-block" onclick="submitReward()">응모하기</button>' +
       '</section>';
-    return shell(html, { topbar: topbar('경품 추첨', '#/compare') });
+    return shell(html, { topbar: topbar('경품 추첨', '#/survey-done') });
   }
 
   window.submitReward = function () {
@@ -627,7 +553,7 @@
       participantId: participant ? participant.participantId : '',
       nameOrNickname: name.trim(),
       contact: contact.trim(),
-      submittedAt: new Date(S.now()).toISOString()
+      submittedAt: new Date().toISOString()
     };
     S.set(K.REWARD_DATA, rewardData);
     syncToSheet('reward', rewardData);
@@ -640,24 +566,17 @@
   function buildFullRecord() {
     var participant = S.get(K.PARTICIPANT) || {};
     var pre = S.get(K.PRE_SCORES) || {};
-    var post = S.get(K.POST_SCORES) || {};
     var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [] });
-    var survey = S.get(K.POST_SURVEY) || {};
-    var hasPost = !!S.get(K.POST_SCORES);
-    var change = hasPost ? L.calcChange(pre, post) : {};
+    var survey = S.get(K.SURVEY) || {};
 
     return {
       participantId: participant.participantId || '',
       preExploration: pre.exploration, preInstruction: pre.instruction, preVerification: pre.verification,
       preApplication: pre.application, preExpansion: pre.expansion, preOverall: pre.overall, preLevel: pre.level,
-      postExploration: post.exploration, postInstruction: post.instruction, postVerification: post.verification,
-      postApplication: post.application, postExpansion: post.expansion, postOverall: post.overall, postLevel: post.level,
-      explorationChange: change.exploration, instructionChange: change.instruction, verificationChange: change.verification,
-      applicationChange: change.application, expansionChange: change.expansion, overallChange: change.overall,
       recommendedChallenges: roadmap.recommendedChallenges.join('|'),
       challengeCompletion: survey.challengeCompletion,
       helpfulness: survey.helpfulness, behaviorChange: survey.behaviorChange, satisfaction: survey.satisfaction,
-      createdAt: participant.createdAt || '', postCompletedAt: survey.completedAt || ''
+      createdAt: participant.createdAt || '', surveyCompletedAt: survey.completedAt || ''
     };
   }
 
@@ -680,17 +599,6 @@
     render();
   };
 
-  window.devAdjustDays = function (days) {
-    var current = S.get(K.DEV_DATE_OFFSET_MS, 0) || 0;
-    S.set(K.DEV_DATE_OFFSET_MS, current + days * 86400000);
-    render();
-  };
-
-  window.devResetOffset = function () {
-    S.set(K.DEV_DATE_OFFSET_MS, 0);
-    render();
-  };
-
   window.devManualSync = function () {
     var record = buildFullRecord();
     syncToSheet('assessment', record);
@@ -708,16 +616,12 @@
 
   function pageDev() {
     var record = buildFullRecord();
-    var offset = S.get(K.DEV_DATE_OFFSET_MS, 0) || 0;
-    var simulatedNow = new Date(S.now());
     var raw = {
       participant: S.get(K.PARTICIPANT),
       preAssessment: S.get(K.PRE_ASSESSMENT),
       preScores: S.get(K.PRE_SCORES),
       roadmap: S.get(K.ROADMAP),
-      postAssessment: S.get(K.POST_ASSESSMENT),
-      postScores: S.get(K.POST_SCORES),
-      postSurvey: S.get(K.POST_SURVEY),
+      survey: S.get(K.SURVEY),
       rewardData: S.get(K.REWARD_DATA)
     };
 
@@ -735,17 +639,6 @@
         : '<p class="muted small">⚪ 미설정 - app.js 상단의 <code>SHEET_WEBHOOK_URL</code>을 배포한 Apps Script 웹앱 URL로 채우면 활성화됩니다. (google-apps-script.gs 참고)</p>') +
       '<button class="btn btn-ghost btn-block" onclick="devManualSync()">지금 현재 데이터 수동 동기화</button>' +
       '<p class="fine-print">no-cors 전송이라 성공 여부를 브라우저에서 확인할 수 없습니다. 구글시트에 실제로 값이 들어왔는지 직접 확인하세요.</p>' +
-      '</section>' +
-
-      '<section class="card">' +
-      '<h3>7일 경과 시뮬레이션</h3>' +
-      '<p class="muted small">현재 시뮬레이션된 날짜: ' + simulatedNow.toLocaleString('ko-KR') + ' (offset ' + (offset / 86400000).toFixed(1) + '일)</p>' +
-      '<div class="btn-row wrap">' +
-      '<button class="btn btn-ghost" onclick="devAdjustDays(1)">+1일</button>' +
-      '<button class="btn btn-ghost" onclick="devAdjustDays(3)">+3일</button>' +
-      '<button class="btn btn-ghost" onclick="devAdjustDays(7)">+7일</button>' +
-      '<button class="btn btn-ghost" onclick="devResetOffset()">오프셋 리셋</button>' +
-      '</div>' +
       '</section>' +
 
       '<section class="card">' +
@@ -781,7 +674,7 @@
     } else if (parts[0] === 'pre' && parts[1] === 'intro') {
       html = pagePreIntro();
     } else if (parts[0] === 'pre' && parts[1] === 'q') {
-      html = pageQuizQuestion('pre', parts[2]);
+      html = pageQuizQuestion(parts[2]);
     } else if (parts[0] === 'pre' && parts[1] === 'personal') {
       html = pagePrePersonal();
     } else if (parts[0] === 'result') {
@@ -790,14 +683,10 @@
       html = pageRoadmap();
     } else if (parts[0] === 'challenge' && parts[1]) {
       html = pageChallengeDetail(parts[1]);
-    } else if (parts[0] === 'post' && parts[1] === 'intro') {
-      html = pagePostIntro();
-    } else if (parts[0] === 'post' && parts[1] === 'q') {
-      html = pageQuizQuestion('post', parts[2]);
-    } else if (parts[0] === 'post-survey') {
-      html = pagePostSurvey();
-    } else if (parts[0] === 'compare') {
-      html = pageCompare();
+    } else if (parts[0] === 'survey-done') {
+      html = pageSurveyDone();
+    } else if (parts[0] === 'survey') {
+      html = pageSurvey();
     } else if (parts[0] === 'reward') {
       html = pageReward();
     } else if (parts[0] === 'dev') {

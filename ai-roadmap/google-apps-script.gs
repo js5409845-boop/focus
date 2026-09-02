@@ -5,12 +5,12 @@
  * 붙여넣어서 사용하는 서버리스 스크립트입니다. (설치 방법은
  * README 안내 또는 대화 내 설명 참고)
  *
- * 참여자의 브라우저(app.js)가 사전진단/사후설문을 완료할 때마다
+ * 참여자의 브라우저(app.js)가 사전진단/만족도 조사를 완료할 때마다
  * 이 스크립트로 데이터를 fire-and-forget 방식(no-cors)으로 전송하면,
  * 이 스크립트가 참여코드(participantId) 기준으로 시트의 행을
  * upsert(있으면 갱신, 없으면 추가)합니다.
  *
- * - AssessmentData 시트: 진단/Challenge/설문 데이터 (연락처 없음)
+ * - AssessmentData 시트: 진단/Challenge 추천/만족도 조사 데이터 (연락처 없음)
  * - RewardData 시트: 경품 응모 연락처만 별도 저장 (진단 데이터와 분리)
  * ============================================================ */
 
@@ -19,12 +19,10 @@
 var ASSESSMENT_HEADERS = [
   'participantId',
   'preExploration', 'preInstruction', 'preVerification', 'preApplication', 'preExpansion', 'preOverall', 'preLevel',
-  'postExploration', 'postInstruction', 'postVerification', 'postApplication', 'postExpansion', 'postOverall', 'postLevel',
-  'explorationChange', 'instructionChange', 'verificationChange', 'applicationChange', 'expansionChange', 'overallChange',
   'recommendedChallenges',
   'challengeCompletion',
   'helpfulness', 'behaviorChange', 'satisfaction',
-  'createdAt', 'postCompletedAt'
+  'createdAt', 'surveyCompletedAt'
 ];
 
 var REWARD_HEADERS = ['participantId', 'nameOrNickname', 'contact', 'submittedAt'];
