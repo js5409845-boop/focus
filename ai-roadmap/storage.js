@@ -20,8 +20,7 @@
     PARTICIPANT: 'participant', // {participantId, createdAt}
     PRE_ASSESSMENT: 'preAssessment', // {q1..q10, difficulty, goal, experience, completedAt}
     PRE_SCORES: 'preScores', // {exploration..expansion, overall, level}
-    ROADMAP: 'roadmap', // {recommendedChallenges:[id], completedChallenges:[id]}
-    CHALLENGE_DATA: 'challengeData', // [{challengeId, dimension, startedAt, completedAt, satisfaction}]
+    ROADMAP: 'roadmap', // {recommendedChallenges:[id]} - 제안까지가 서비스 역할이라 완료 여부는 추적하지 않는다
     POST_ASSESSMENT: 'postAssessment', // {q1..q10, completedAt}
     POST_SCORES: 'postScores',
     POST_SURVEY: 'postSurvey', // {challengeCompletion, helpfulness, behaviorChange, satisfaction, feedback, completedAt}
@@ -69,29 +68,6 @@
       });
     }
 
-    // ---- Challenge 완료 기록 helper (배열 append) ----
-    function appendChallengeRecord(record) {
-      var list = get(KEYS.CHALLENGE_DATA, []);
-      list.push(record);
-      set(KEYS.CHALLENGE_DATA, list);
-      return list;
-    }
-
-    function updateChallengeRecord(challengeId, patch) {
-      var list = get(KEYS.CHALLENGE_DATA, []);
-      var idx = -1;
-      for (var i = list.length - 1; i >= 0; i--) {
-        if (list[i].challengeId === challengeId && !list[i].completedAt) {
-          idx = i;
-          break;
-        }
-      }
-      if (idx === -1) return list;
-      list[idx] = Object.assign({}, list[idx], patch);
-      set(KEYS.CHALLENGE_DATA, list);
-      return list;
-    }
-
     /** dev 모드 보정이 적용된 "현재 시각"(ms) */
     function now() {
       var offset = get(KEYS.DEV_DATE_OFFSET_MS, 0) || 0;
@@ -104,8 +80,6 @@
       set: set,
       remove: remove,
       clearAll: clearAll,
-      appendChallengeRecord: appendChallengeRecord,
-      updateChallengeRecord: updateChallengeRecord,
       now: now
     };
   }

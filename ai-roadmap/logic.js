@@ -200,27 +200,13 @@
     return all.filter(function (c) { return c.id === id; })[0] || null;
   }
 
-  function completionRate(recommendedIds, completedIds) {
-    if (!recommendedIds || recommendedIds.length === 0) return 0;
-    var done = (completedIds || []).filter(function (id) {
-      return recommendedIds.indexOf(id) !== -1;
-    }).length;
-    return round1((done / recommendedIds.length) * 100);
-  }
-
-  function average(nums) {
-    var valid = (nums || []).filter(function (n) { return typeof n === 'number' && !isNaN(n); });
-    if (valid.length === 0) return null;
-    return round1(valid.reduce(function (a, b) { return a + b; }, 0) / valid.length);
-  }
-
   var CSV_COLUMNS = [
     'participantId',
     'preExploration', 'preInstruction', 'preVerification', 'preApplication', 'preExpansion', 'preOverall', 'preLevel',
     'postExploration', 'postInstruction', 'postVerification', 'postApplication', 'postExpansion', 'postOverall', 'postLevel',
     'explorationChange', 'instructionChange', 'verificationChange', 'applicationChange', 'expansionChange', 'overallChange',
-    'recommendedChallenges', 'completedChallenges', 'completionRate',
-    'challengeSatisfaction',
+    'recommendedChallenges',
+    'challengeCompletion',
     'helpfulness', 'behaviorChange', 'satisfaction',
     'createdAt', 'postCompletedAt'
   ];
@@ -265,8 +251,6 @@
     mostChangedDimension: mostChangedDimension,
     recommendChallenges: recommendChallenges,
     findChallengeById: findChallengeById,
-    completionRate: completionRate,
-    average: average,
     CSV_COLUMNS: CSV_COLUMNS,
     buildCsvRow: buildCsvRow,
     escapeCsvValue: escapeCsvValue,

@@ -279,8 +279,7 @@
     }
 
     var picks = L.recommendChallenges(scores, draft.experience, draft.goal);
-    S.set(K.ROADMAP, { recommendedChallenges: picks.map(function (c) { return c.id; }), completedChallenges: [] });
-    S.set(K.CHALLENGE_DATA, []);
+    S.set(K.ROADMAP, { recommendedChallenges: picks.map(function (c) { return c.id; }) });
     // 재시작 시 사후 데이터도 초기화 (동일 브라우저에서 새로 진단을 시작한 경우)
     S.remove(K.POST_ASSESSMENT);
     S.remove(K.POST_SCORES);
@@ -351,31 +350,26 @@
     var participant = S.get(K.PARTICIPANT);
     if (!preScores || !participant) { nav('#/'); return ''; }
 
-    var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [], completedChallenges: [] });
-    var challengeData = S.get(K.CHALLENGE_DATA, []);
-    var total = roadmap.recommendedChallenges.length;
-    var done = roadmap.completedChallenges.length;
+    var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [] });
 
     var cardsHtml = roadmap.recommendedChallenges.map(function (id) {
       var c = L.findChallengeById(id);
       if (!c) return '';
-      var isDone = roadmap.completedChallenges.indexOf(id) !== -1;
       return '' +
-        '<div class="challenge-card' + (isDone ? ' done' : '') + '" onclick="nav(\'#/challenge/' + id + '\')">' +
-        '<div class="cc-check">' + (isDone ? '✓' : '□') + '</div>' +
+        '<div class="challenge-card" onclick="nav(\'#/challenge/' + id + '\')">' +
         '<div class="cc-body">' +
         '<div class="cc-title">' + esc(c.title) + '</div>' +
         '<div class="cc-meta">' + D.DIMENSION_LABELS[c.dimension] + ' · ' + c.estimatedTime + '</div>' +
         '</div>' +
-        (isDone ? '<div class="cc-badge">완료</div>' : '') +
+        '<div class="cc-arrow">›</div>' +
         '</div>';
     }).join('');
 
     var html = '' +
       '<section class="card roadmap-head">' +
       '<div class="level-badge small">' + preScores.levelLabel + '</div>' +
-      '<div class="roadmap-progress-label">이번 주 Challenge<br><strong>' + done + ' / ' + total + ' 완료</strong></div>' +
-      '<div class="dim-bar big"><div class="dim-bar-fill" style="width:' + (total ? (done / total * 100) : 0) + '%"></div></div>' +
+      '<div class="roadmap-progress-label">나에게 추천하는 AI Challenge</div>' +
+      '<p class="muted small">여기까지가 이 서비스의 제안이에요. 실제 실행은 각자의 방식과 속도로 해보시면 됩니다.</p>' +
       '</section>' +
       '<section class="challenge-list">' + cardsHtml + '</section>' +
       dashboardSection() +
@@ -421,45 +415,11 @@
   // ---------------------------------------------------------------
   // 6. Challenge 상세 / 실행 / 완료
   // ---------------------------------------------------------------
-  var pendingSatisfactionFor = null; // 완료하기 클릭 후 만족도 선택 대기 중인 challenge id
-
-  function findOpenRecord(challengeId) {
-    var list = S.get(K.CHALLENGE_DATA, []);
-    for (var i = list.length - 1; i >= 0; i--) {
-      if (list[i].challengeId === challengeId) return list[i];
-    }
-    return null;
-  }
-
   function pageChallengeDetail(id) {
     var c = L.findChallengeById(id);
     if (!c) { nav('#/roadmap'); return ''; }
-    var record = findOpenRecord(id);
-    var started = !!record;
-    var completed = !!(record && record.completedAt);
 
     var stepsHtml = c.steps.map(function (s, i) { return '<li><span class="step-num">' + (i + 1) + '</span>' + esc(s) + '</li>'; }).join('');
-
-    var actionHtml;
-    if (completed) {
-      actionHtml = '' +
-        '<div class="celebrate">🎉 Challenge 완료!</div>' +
-        '<p class="muted small">만족도: ' + record.satisfaction + ' / 5</p>' +
-        '<button class="btn btn-secondary btn-block" onclick="nav(\'#/roadmap\')">로드맵으로 돌아가기</button>';
-    } else if (pendingSatisfactionFor === id) {
-      actionHtml = '' +
-        '<div class="celebrate">🎉 Challenge 완료!</div>' +
-        '<p>이번 활동이 AI 활용에 도움이 되었나요?</p>' +
-        '<div class="scale-opts row">' +
-        [1, 2, 3, 4, 5].map(function (v) {
-          return '<button class="scale-opt sm" onclick="finishChallenge(\'' + id + '\',' + v + ')"><span class="scale-opt-num">' + v + '</span></button>';
-        }).join('') +
-        '</div>';
-    } else if (started) {
-      actionHtml = '<button class="btn btn-primary btn-block" onclick="requestFinishChallenge(\'' + id + '\')">완료하기</button>';
-    } else {
-      actionHtml = '<button class="btn btn-primary btn-block" onclick="beginChallenge(\'' + id + '\',\'' + c.dimension + '\')">Challenge 시작</button>';
-    }
 
     var html = '' +
       '<section class="card">' +
@@ -467,42 +427,17 @@
       '<h2>' + esc(c.title) + '</h2>' +
       '<p class="challenge-goal"><strong>목표</strong><br>' + esc(c.goal) + '</p>' +
       '<p class="muted">' + esc(c.description) + '</p>' +
-      '<h3>실행 방법</h3>' +
+      '<h3>실행 방법 (참고용)</h3>' +
       '<ol class="step-list">' + stepsHtml + '</ol>' +
-      '<div class="output-box"><strong>실제 결과물</strong><br>' + esc(c.output) + '</div>' +
+      '<div class="output-box"><strong>실제 결과물 예시</strong><br>' + esc(c.output) + '</div>' +
       '</section>' +
-      '<section class="card action-card">' + actionHtml + '</section>';
+      '<section class="card action-card">' +
+      '<p class="muted small">이 Challenge를 어떻게, 언제 해볼지는 직접 정해보세요.</p>' +
+      '<button class="btn btn-secondary btn-block" onclick="nav(\'#/roadmap\')">로드맵으로 돌아가기</button>' +
+      '</section>';
 
     return shell(html, { topbar: topbar('Challenge', '#/roadmap') });
   }
-
-  window.beginChallenge = function (id, dimension) {
-    S.appendChallengeRecord({
-      challengeId: id,
-      dimension: dimension,
-      startedAt: new Date(S.now()).toISOString(),
-      completedAt: null,
-      satisfaction: null
-    });
-    render();
-  };
-
-  window.requestFinishChallenge = function (id) {
-    pendingSatisfactionFor = id;
-    render();
-  };
-
-  window.finishChallenge = function (id, satisfaction) {
-    S.updateChallengeRecord(id, { completedAt: new Date(S.now()).toISOString(), satisfaction: satisfaction });
-    var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [], completedChallenges: [] });
-    if (roadmap.completedChallenges.indexOf(id) === -1) {
-      roadmap.completedChallenges.push(id);
-      S.set(K.ROADMAP, roadmap);
-    }
-    pendingSatisfactionFor = null;
-    syncToSheet('assessment', buildFullRecord());
-    render();
-  };
 
   // ---------------------------------------------------------------
   // 7. 사후 추가 설문 (Q11~15)
@@ -706,12 +641,10 @@
     var participant = S.get(K.PARTICIPANT) || {};
     var pre = S.get(K.PRE_SCORES) || {};
     var post = S.get(K.POST_SCORES) || {};
-    var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [], completedChallenges: [] });
-    var challengeData = S.get(K.CHALLENGE_DATA, []);
+    var roadmap = S.get(K.ROADMAP, { recommendedChallenges: [] });
     var survey = S.get(K.POST_SURVEY) || {};
     var hasPost = !!S.get(K.POST_SCORES);
     var change = hasPost ? L.calcChange(pre, post) : {};
-    var satisfactions = challengeData.map(function (c) { return c.satisfaction; }).filter(function (v) { return v != null; });
 
     return {
       participantId: participant.participantId || '',
@@ -722,9 +655,7 @@
       explorationChange: change.exploration, instructionChange: change.instruction, verificationChange: change.verification,
       applicationChange: change.application, expansionChange: change.expansion, overallChange: change.overall,
       recommendedChallenges: roadmap.recommendedChallenges.join('|'),
-      completedChallenges: roadmap.completedChallenges.join('|'),
-      completionRate: L.completionRate(roadmap.recommendedChallenges, roadmap.completedChallenges),
-      challengeSatisfaction: L.average(satisfactions),
+      challengeCompletion: survey.challengeCompletion,
       helpfulness: survey.helpfulness, behaviorChange: survey.behaviorChange, satisfaction: survey.satisfaction,
       createdAt: participant.createdAt || '', postCompletedAt: survey.completedAt || ''
     };
@@ -769,7 +700,7 @@
   };
 
   window.devClearAll = function () {
-    if (confirm('저장된 모든 진단/Challenge/설문 데이터를 삭제할까요?')) {
+    if (confirm('저장된 모든 진단/설문 데이터를 삭제할까요?')) {
       S.clearAll();
       nav('#/');
     }
@@ -784,7 +715,6 @@
       preAssessment: S.get(K.PRE_ASSESSMENT),
       preScores: S.get(K.PRE_SCORES),
       roadmap: S.get(K.ROADMAP),
-      challengeData: S.get(K.CHALLENGE_DATA),
       postAssessment: S.get(K.POST_ASSESSMENT),
       postScores: S.get(K.POST_SCORES),
       postSurvey: S.get(K.POST_SURVEY),

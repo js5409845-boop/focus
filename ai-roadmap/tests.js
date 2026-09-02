@@ -129,27 +129,27 @@ group('4. 가장 낮은 영역에 따른 Challenge 추천 변화', function () {
 });
 
 // ---------------------------------------------------------------
-group('5~6. Challenge 완료 상태 저장 및 새로고침 후 유지(저장소 로직)', function () {
-  test('Challenge 시작/완료 기록이 저장소에 저장된다', function () {
+// 서비스 역할을 "제안까지"로 좁히면서 Challenge 시작/완료 추적 기능은
+// 제거했다. 대신 추천 결과(roadmap)가 새로고침 후에도 유지되는지를
+// 검증해 요구사항 29의 5~6번(저장/새로고침 유지) 취지를 계속 다룬다.
+group('5~6. 추천 Challenge 목록 저장 및 새로고침 후 유지(저장소 로직)', function () {
+  test('추천 Challenge 목록이 저장소에 저장된다', function () {
     var backend = STORAGE.createMemoryBackend();
     var store = STORAGE.createStore(backend);
-    store.appendChallengeRecord({ challengeId: 'verify-1', dimension: 'verification', startedAt: new Date().toISOString(), completedAt: null, satisfaction: null });
-    store.updateChallengeRecord('verify-1', { completedAt: new Date().toISOString(), satisfaction: 5 });
+    store.set(store.KEYS.ROADMAP, { recommendedChallenges: ['verify-1', 'apply-1', 'expand-2'] });
 
-    var list = store.get(store.KEYS.CHALLENGE_DATA, []);
-    assert.strictEqual(list.length, 1);
-    assert.strictEqual(list[0].satisfaction, 5);
-    assert.ok(list[0].completedAt);
+    var roadmap = store.get(store.KEYS.ROADMAP);
+    assert.deepStrictEqual(roadmap.recommendedChallenges, ['verify-1', 'apply-1', 'expand-2']);
   });
 
   test('같은 backend로 새 store를 만들어도(=새로고침 시뮬레이션) 데이터가 유지된다', function () {
     var backend = STORAGE.createMemoryBackend();
     var store1 = STORAGE.createStore(backend);
-    store1.set(store1.KEYS.ROADMAP, { recommendedChallenges: ['a', 'b', 'c'], completedChallenges: ['a'] });
+    store1.set(store1.KEYS.ROADMAP, { recommendedChallenges: ['a', 'b', 'c'] });
 
     var store2 = STORAGE.createStore(backend); // 새 인스턴스 = 새로고침 후 재로딩
     var roadmap = store2.get(store2.KEYS.ROADMAP);
-    assert.deepStrictEqual(roadmap.completedChallenges, ['a']);
+    assert.deepStrictEqual(roadmap.recommendedChallenges, ['a', 'b', 'c']);
   });
 });
 

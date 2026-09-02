@@ -5,7 +5,7 @@
  * 붙여넣어서 사용하는 서버리스 스크립트입니다. (설치 방법은
  * README 안내 또는 대화 내 설명 참고)
  *
- * 참여자의 브라우저(app.js)가 진단/Challenge/설문을 완료할 때마다
+ * 참여자의 브라우저(app.js)가 사전진단/사후설문을 완료할 때마다
  * 이 스크립트로 데이터를 fire-and-forget 방식(no-cors)으로 전송하면,
  * 이 스크립트가 참여코드(participantId) 기준으로 시트의 행을
  * upsert(있으면 갱신, 없으면 추가)합니다.
@@ -21,8 +21,8 @@ var ASSESSMENT_HEADERS = [
   'preExploration', 'preInstruction', 'preVerification', 'preApplication', 'preExpansion', 'preOverall', 'preLevel',
   'postExploration', 'postInstruction', 'postVerification', 'postApplication', 'postExpansion', 'postOverall', 'postLevel',
   'explorationChange', 'instructionChange', 'verificationChange', 'applicationChange', 'expansionChange', 'overallChange',
-  'recommendedChallenges', 'completedChallenges', 'completionRate',
-  'challengeSatisfaction',
+  'recommendedChallenges',
+  'challengeCompletion',
   'helpfulness', 'behaviorChange', 'satisfaction',
   'createdAt', 'postCompletedAt'
 ];
